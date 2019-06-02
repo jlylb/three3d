@@ -619,6 +619,10 @@
     error-stack-parser "^2.0.0"
     string-width "^2.0.0"
 
+"@tweenjs/tween.js@^17.3.0":
+  version "17.3.0"
+  resolved "https://registry.npm.taobao.org/@tweenjs/tween.js/download/@tweenjs/tween.js-17.3.0.tgz#1cbea14b4b5baa292274c96766fd1b2a56b7ca9f"
+
 "@types/events@*":
   version "3.0.0"
   resolved "https://registry.npm.taobao.org/@types/events/download/@types/events-3.0.0.tgz#2862f3f58a9a7f7c3e78d79f130dd4d71c25c2a7"
@@ -2211,6 +2215,10 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
+dat.gui@^0.7.6:
+  version "0.7.6"
+  resolved "https://registry.npm.taobao.org/dat.gui/download/dat.gui-0.7.6.tgz#92182a0f2dc96c26910f888238d3839166d82f76"
+
 date-now@^0.1.4:
   version "0.1.4"
   resolved "https://registry.npm.taobao.org/date-now/download/date-now-0.1.4.tgz#eaf439fd4d4848ad74e5cc7dbef200672b9e345b"
@@ -2809,6 +2817,13 @@ expand-brackets@^2.1.4:
     regex-not "^1.0.0"
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
+
+exports-loader@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.npm.taobao.org/exports-loader/download/exports-loader-0.7.0.tgz#84881c784dea6036b8e1cd1dac3da9b6409e21a5"
+  dependencies:
+    loader-utils "^1.1.0"
+    source-map "0.5.0"
 
 express@^4.16.3, express@^4.16.4:
   version "4.17.0"
@@ -3578,6 +3593,13 @@ import-local@^2.0.0:
   dependencies:
     pkg-dir "^3.0.0"
     resolve-cwd "^2.0.0"
+
+imports-loader@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.npm.taobao.org/imports-loader/download/imports-loader-0.8.0.tgz#030ea51b8ca05977c40a3abfd9b4088fe0be9a69"
+  dependencies:
+    loader-utils "^1.0.2"
+    source-map "^0.6.1"
 
 imurmurhash@^0.1.4:
   version "0.1.4"
@@ -4697,6 +4719,10 @@ object.values@^1.1.0:
 obuf@^1.0.0, obuf@^1.1.2:
   version "1.1.2"
   resolved "https://registry.npm.taobao.org/obuf/download/obuf-1.1.2.tgz#09bea3343d41859ebd446292d11c9d4db619084e"
+
+oimo@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.npm.taobao.org/oimo/download/oimo-1.0.9.tgz#0b592e361c799103fdb04fb3be1264245ef6884b"
 
 on-finished@~2.3.0:
   version "2.3.0"
@@ -6038,6 +6064,10 @@ source-map-url@^0.4.0:
   version "0.4.0"
   resolved "https://registry.npm.taobao.org/source-map-url/download/source-map-url-0.4.0.tgz#3e935d7ddd73631b97659956d55128e87b5084a3"
 
+source-map@0.5.0:
+  version "0.5.0"
+  resolved "https://registry.npm.taobao.org/source-map/download/source-map-0.5.0.tgz#0fe96503ac86a5adb5de63f4e412ae4872cdbe86"
+
 source-map@^0.5.0, source-map@^0.5.3, source-map@^0.5.6:
   version "0.5.7"
   resolved "https://registry.npm.taobao.org/source-map/download/source-map-0.5.7.tgz#8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc"
@@ -6139,6 +6169,10 @@ static-extend@^0.1.1:
   dependencies:
     define-property "^0.2.5"
     object-copy "^0.1.0"
+
+stats-js@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npm.taobao.org/stats-js/download/stats-js-1.0.1.tgz#377c36490c1935b9a4e68bf3acc3afeb59878f66"
 
 "statuses@>= 1.4.0 < 2", "statuses@>= 1.5.0 < 2", statuses@~1.5.0:
   version "1.5.0"
@@ -6389,6 +6423,18 @@ thread-loader@^2.1.2:
     loader-runner "^2.3.1"
     loader-utils "^1.1.0"
     neo-async "^2.6.0"
+
+three-orbit-controls@^82.1.0:
+  version "82.1.0"
+  resolved "https://registry.npm.taobao.org/three-orbit-controls/download/three-orbit-controls-82.1.0.tgz#11a7f33d0a20ecec98f098b37780f6537374fab4"
+
+three@^0.104.0:
+  version "0.104.0"
+  resolved "https://registry.npm.taobao.org/three/download/three-0.104.0.tgz#9ad1da492153b753a89e0df066631215bd9d9087"
+
+threebsp@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.npm.taobao.org/threebsp/download/threebsp-1.0.4.tgz#c2156a25e07ce83fea00e2b87af2c34b13b838cf"
 
 through2@^2.0.0:
   version "2.0.5"
@@ -6744,6 +6790,10 @@ vue-loader@^15.7.0:
     vue-hot-reload-api "^2.3.0"
     vue-style-loader "^4.1.0"
 
+vue-router@^3.0.6:
+  version "3.0.6"
+  resolved "https://registry.npm.taobao.org/vue-router/download/vue-router-3.0.6.tgz#2e4f0f9cbb0b96d0205ab2690cfe588935136ac3"
+
 vue-style-loader@^4.1.0:
   version "4.1.2"
   resolved "https://registry.npm.taobao.org/vue-style-loader/download/vue-style-loader-4.1.2.tgz#dedf349806f25ceb4e64f3ad7c0a44fba735fcf8"
@@ -6761,6 +6811,16 @@ vue-template-compiler@^2.5.21:
 vue-template-es2015-compiler@^1.9.0:
   version "1.9.1"
   resolved "https://registry.npm.taobao.org/vue-template-es2015-compiler/download/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
+
+vue-threejs@^0.2.0-alpha.1:
+  version "0.2.0-alpha.1"
+  resolved "https://registry.npm.taobao.org/vue-threejs/download/vue-threejs-0.2.0-alpha.1.tgz#73f2d33637f5b763ce8b57b424c5dc85b6f6ebb7"
+
+vue3d@^0.7.4:
+  version "0.7.4"
+  resolved "https://registry.npm.taobao.org/vue3d/download/vue3d-0.7.4.tgz#14a0099e4be83051ba4c395225310364aa1cea2b"
+  dependencies:
+    three "^0.104.0"
 
 vue@^2.6.10:
   version "2.6.10"
