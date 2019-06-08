@@ -24,6 +24,10 @@ const routes = [
         path:"/c7",
         component: () => import ("@/views/c7.vue")
     },
+    {
+        path:"/c8",
+        component: () => import ("@/views/c8.vue")
+    },
 ]
 
 var router =  new VueRouter({
