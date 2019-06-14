@@ -11,14 +11,17 @@ import Tools from "@/tools/utils.js";
 import gData from "@/data/jigui.js";
 import host from "@/data/host.js";
 
+import glass from "@/data/glass.js";
+import wall from "@/data/wall.js";
+
 const TWEEN = require("@tweenjs/tween.js");
 let scene, camera, renderer, light, controls;
 const floorJpg = require("../assets/floor.jpg");
 
 let raycaster;
 let mouseClick;
-// mouseClick = new THREE.Vector2();
-// raycaster = new THREE.Raycaster();
+mouseClick = new THREE.Vector2();
+raycaster = new THREE.Raycaster();
 const objects = [];
 let dbclick = 0;
 let SELECTED;
@@ -66,7 +69,7 @@ export default {
     },
     initCamera() {
       camera = new THREE.PerspectiveCamera(
-        20,
+        45,
         window.innerWidth / window.innerHeight,
         1,
         100000
@@ -87,6 +90,10 @@ export default {
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.getElementById("container").appendChild(renderer.domElement);
       renderer.setClearColor(0x225f93, 1.0);
+
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMapSoft = true;
+
       renderer.domElement.addEventListener(
         "mousedown",
         this.onDocumentMouseDown,
@@ -113,7 +120,7 @@ export default {
       scene.add(light);
       var light2 = new THREE.PointLight(0x555555);
       light2.shadow.camera.near = 1;
-      light2.shadow.camera.far = 10000;
+      light2.shadow.camera.far = 5000;
       light2.position.set(0, 350, 0);
       light2.castShadow = true; //表示这个光是可以产生阴影的
       scene.add(light2);
@@ -157,7 +164,9 @@ export default {
         }
       }
       scene.add(tempobj);
-      scene.position.set(-300, 0, 0);
+
+      tempobj.position.set(-400, 200, 0);
+      // scene.position.set(-300, 0, 0);
     },
     cloneHost(host1, jh, jd, row, column, offsetX, offsetY) {
       const { height, y } = host1;
@@ -166,13 +175,13 @@ export default {
 
       let cloneHost;
       let hostObj;
-      const x = 2 * (column - 1) * (66 + 10);
+      const x = 2 * (column - 1) * (66 + 10) - 400;
       const z = 2 * (row - 1) * (jd + 30);
       for (let i = 0; i < num; i++) {
         cloneHost = {
           ...host,
           x: x,
-          y: (i + 1) * y,
+          y: (i + 1) * y + 200,
           z: z,
           name: `equipment_card_${row}_${i}`
         };
@@ -188,10 +197,19 @@ export default {
 
       var axesHelper = new THREE.AxesHelper(1200);
       scene.add(axesHelper);
+      Tools.addScene(scene);
+      var gobj = Tools.createPlaneGeometry(glass);
+      console.log(gobj, "glass......");
+      scene.add(gobj);
 
-      //scene.add(Tools.CreateFloor(floor));
+      scene.add(Tools.CreateFloor(floor));
+      var walls = Tools.CreateWall(wall);
+      console.log(walls, "add wall......");
+      walls.forEach(item => {
+        scene.add(item);
+      });
 
-      //this.cloneCabinet(gData);
+      this.cloneCabinet(gData);
       //this.cloneHost(host);
     },
 
@@ -200,7 +218,7 @@ export default {
         TWEEN.update();
       }
       requestAnimationFrame(this.render);
-
+      //camera.lookAt(scene.position);
       //cube.rotation.x += 0.1;
       //cube.rotation.y += 0.1;
       renderer.render(scene, camera);
@@ -242,11 +260,17 @@ export default {
           SELECTED = intersects[0].object;
           if (SELECTED.name.includes("cabinet_door")) {
             console.log("open the door");
-            Tools.openRightDoor(SELECTED);
+            Tools.openDoor(SELECTED);
           }
           if (SELECTED.name.includes("equipment_card")) {
             console.log("open the door");
             Tools.openServer(SELECTED);
+          }
+          if (SELECTED.name.includes("doorRight")) {
+            Tools.openRightDoor(SELECTED);
+          }
+          if (SELECTED.name.includes("doorLeft")) {
+            Tools.openLeftDoor(SELECTED);
           }
           controls.enabled = true;
         }
