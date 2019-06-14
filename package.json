@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@tweenjs/tween.js": "^17.3.0",
+    "@wildpeaks/three-webpack-plugin": "^2.0.0",
     "core-js": "^2.6.5",
     "dat.gui": "^0.7.6",
     "exports-loader": "^0.7.0",

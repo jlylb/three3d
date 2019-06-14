@@ -1,5 +1,5 @@
 <template>
-    <div id="container"></div>
+  <div id="container"></div>
 </template>
 
 <script>
@@ -15,9 +15,6 @@ const TWEEN = require("@tweenjs/tween.js");
 let scene, camera, renderer, light, controls;
 const floorJpg = require("../assets/floor.jpg");
 
-
-
-
 let raycaster;
 let mouseClick;
 // mouseClick = new THREE.Vector2();
@@ -27,37 +24,37 @@ let dbclick = 0;
 let SELECTED;
 
 const floor = {
-                show: true,
-                uuid: "",
-                name: 'floor',
-                objType: 'floor',
-                width: 2000,
-                depth: 1600,
-                height: 10,
-                rotation: [{ direction: 'x', degree: 0 }],//旋转 表示x方向0度  arb表示任意参数值[x,y,z,angle] 
-                x: 0,
-                y: 0,
-                z: 0,
-                style: {
-                    skinColor: 0x8ac9e2,
-                    skin: {
-                        up: {
-                            skinColor: 0x98750f,
-                            imgurl: floorJpg,
-                            repeatx: true,
-                            repeaty: true,
-                            // width: 128,
-                            // height: 128
-                        },
-                        down: {
-                            skinColor: 0x8ac9e2,
-                        },
-                        before: {
-                            skinColor: 0x8ac9e2,
-                        }
-                    }
-                }
-            }
+  show: true,
+  uuid: "",
+  name: "floor",
+  objType: "floor",
+  width: 2000,
+  depth: 1600,
+  height: 10,
+  rotation: [{ direction: "x", degree: 0 }], //旋转 表示x方向0度  arb表示任意参数值[x,y,z,angle]
+  x: 0,
+  y: 0,
+  z: 0,
+  style: {
+    skinColor: 0x8ac9e2,
+    skin: {
+      up: {
+        skinColor: 0x98750f,
+        imgurl: floorJpg,
+        repeatx: true,
+        repeaty: true
+        // width: 128,
+        // height: 128
+      },
+      down: {
+        skinColor: 0x8ac9e2
+      },
+      before: {
+        skinColor: 0x8ac9e2
+      }
+    }
+  }
+};
 
 export default {
   methods: {
@@ -89,7 +86,7 @@ export default {
       renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.getElementById("container").appendChild(renderer.domElement);
-      renderer.setClearColor(0xffffff, 1.0);
+      renderer.setClearColor(0x225f93, 1.0);
       renderer.domElement.addEventListener(
         "mousedown",
         this.onDocumentMouseDown,
@@ -123,67 +120,81 @@ export default {
 
       // A end
     },
+    cloneCabinet(dataObj, rowX = 5, rowY = 2, distanceX = 10, distanceY = 30) {
+      let obj;
+      let offsetX = 0;
+      let offsetY = 0;
+      let cub;
+      const tempobj = new THREE.Group();
+      const { size, doors } = dataObj;
+      let hcube;
+
+      for (let i = 1; i < rowY + 1; i++) {
+        offsetY = (i - 1) * (size.depth + distanceY);
+        for (let n = 1; n < rowX + 1; n++) {
+          offsetX = (n - 1) * (size.width + distanceX);
+
+          obj = {
+            ...dataObj,
+            name: `cabinet${i}_${n}`,
+            shellname: `cabinet${i}_${n}_shell`,
+            position: { x: offsetX, y: 0, z: offsetY },
+            doors: { ...doors, doorname: [`cabinet_door_${i}_${n}`] }
+          };
+
+          cub = Tools.createEmptyCabinetX(obj, scene);
+          console.log(cub, "cub......");
+          tempobj.add(cub);
+          hcube = this.cloneHost(
+            host,
+            dataObj.size.height,
+            dataObj.size.depth,
+            i,
+            n,
+            offsetX,
+            offsetY
+          );
+        }
+      }
+      scene.add(tempobj);
+      scene.position.set(-300, 0, 0);
+    },
+    cloneHost(host1, jh, jd, row, column, offsetX, offsetY) {
+      const { height, y } = host1;
+
+      const num = Math.floor(jh / Math.abs(y)) - 1;
+
+      let cloneHost;
+      let hostObj;
+      const x = 2 * (column - 1) * (66 + 10);
+      const z = 2 * (row - 1) * (jd + 30);
+      for (let i = 0; i < num; i++) {
+        cloneHost = {
+          ...host,
+          x: x,
+          y: (i + 1) * y,
+          z: z,
+          name: `equipment_card_${row}_${i}`
+        };
+        console.log(cloneHost, "clone host.....");
+        hostObj = Tools.createCubeX(cloneHost);
+        console.log(hostObj, "host obj....");
+        scene.add(hostObj);
+        objects.push(hostObj);
+      }
+    },
     initObject() {
-        console.log( gData, 'data...........')
-scene.add(Tools.CreateFloor(floor));
+      console.log(gData, "data...........");
 
-      scene.add(Tools.createEmptyCabinetX(gData));
+      var axesHelper = new THREE.AxesHelper(1200);
+      scene.add(axesHelper);
 
-      const data1 = {
-        ...gData,
-        name: "cabinet1_2",
-        shellname: "cabinet1_2_shell",
+      //scene.add(Tools.CreateFloor(floor));
 
-        position: { x: 180, y: 0, z: -180 },
-        doors: {
-          doorType: "lr", // ud上下门 lr左右门 单门可以缺省
-          doorSize: [1],
-          doorname: ["cabinet_door_02"],
-          skins: gData.doors.skins
-        }
-      };
-      console.log(data1, "jigui 111111");
-      scene.add(Tools.createEmptyCabinetX(data1));
-
-      const data2 = {
-        ...gData,
-        name: "cabinet1_3",
-        shellname: "cabinet1_3_shell",
-
-        position: { x: 360, y: 0, z: -180 },
-        doors: {
-          doorType: "lr", // ud上下门 lr左右门 单门可以缺省
-          doorSize: [1],
-          doorname: ["cabinet_door_03"],
-          skins: gData.doors.skins
-        }
-      };
-      console.log(data2, "jigui 33333333333333");
-      scene.add(Tools.createEmptyCabinetX(data2));
-
-      const hostObj = Tools.createCubeX(host);
-      scene.add(hostObj);
-      objects.push(hostObj);
-
-      const host1 = { ...host, y: -40, name: "equipment_card_2" };
-
-      const hostObj1 = Tools.createCubeX(host1);
-      scene.add(hostObj1);
-      objects.push(hostObj1);
-
-      const host2 = { ...host, y: -60, name: "equipment_card_3" };
-      const hostObj2 = Tools.createCubeX(host2);
-      scene.add(hostObj2);
-      objects.push(hostObj2);
+      //this.cloneCabinet(gData);
+      //this.cloneHost(host);
     },
-    drawShape() {
-      var shape = new THREE.Shape();
-      shape.moveTo(10, 10);
-      shape.lineTo(10, 40);
-      shape.lineTo(40, 40);
-      shape.lineTo(10, 10);
-      return shape;
-    },
+
     render() {
       if (TWEEN != null && typeof TWEEN != "undefined") {
         TWEEN.update();
@@ -204,7 +215,7 @@ scene.add(Tools.CreateFloor(floor));
     },
     onDocumentMouseDown(event) {
       var mouse = {};
-      mouse.x = event.clientX / window.innerWidth * 2 - 1;
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
       var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5).unproject(camera);
 
