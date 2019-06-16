@@ -32,6 +32,10 @@ const routes = [
         path:"/c9",
         component: () => import ("@/views/c9.vue")
     },
+    {
+        path:"/c11",
+        component: () => import ("@/views/c11.vue")
+    },
 ]
 
 var router =  new VueRouter({
