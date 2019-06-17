@@ -4,6 +4,7 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 const routes = [
+<<<<<<< HEAD
   {
     path: '/c3',
     component: () => import('@/views/c3.vue')
@@ -35,7 +36,12 @@ const routes = [
   {
     path: '/c10',
     component: () => import('@/views/c10.vue')
-  }
+  },
+    {
+        path:"/c11",
+        component: () => import ("@/views/c11.vue")
+    },
+
 ]
 
 var router = new VueRouter({
