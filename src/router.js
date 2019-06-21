@@ -39,6 +39,22 @@ const routes = [
   {
     path: '/c11',
     component: () => import('@/views/c11.vue')
+  },
+  {
+    path: '/c12',
+    component: () => import('@/views/c12.vue')
+  },
+  {
+    path: '/c13',
+    component: () => import('@/views/c13.vue')
+  },
+  {
+    path: '/c14',
+    component: () => import('@/views/c14.vue')
+  },
+  {
+    path: '/c15',
+    component: () => import('@/views/c15.vue')
   }
 ]
 
