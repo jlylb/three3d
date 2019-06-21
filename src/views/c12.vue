@@ -89,9 +89,9 @@ export default {
     },
     initObjects() {
       this.createFloor();
-      //this.createPlan();
-      //this.createDesk();
-      //this.createChairs();
+      this.createPlan();
+      this.createDesk();
+      this.createChairs();
     },
     openDoor(obj, doorDirection = "left") {
       var doorstate = "close";
@@ -638,7 +638,7 @@ export default {
       const texture = new THREE.TextureLoader().load(floorJpg);
       texture.wrapS = THREE.RepeatWrapping;
       texture.wrapT = THREE.RepeatWrapping;
-      texture.repeat.set(0.25, 0.25);
+      texture.repeat.set(0.05, 0.05);
 
       const material2 = { map: texture, transparent: true };
       mats.push(new THREE.MeshLambertMaterial(material2));
