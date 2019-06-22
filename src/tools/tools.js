@@ -1,5 +1,4 @@
 import * as THREE from 'three'
-import { ReactiveTest } from 'rx';
 const TWEEN = require('@tweenjs/tween.js')
 require('threebsp')
 
@@ -14,7 +13,6 @@ export default {
           doorstate = obj.doorState;
           tempobj = obj.parent;
         } else {
-          console.log("add parent");
           var objparent = obj.parent;
           tempobj = new THREE.Group();
           tempobj.position.set(
@@ -60,23 +58,23 @@ export default {
         );
   
   
-        var intersects = raycaster.intersectObjects(scene.children, true);
+        var intersects = raycaster.intersectObjects(this.scene.children, true);
   
         console.log(intersects, "intersect......");
   
         if (intersects.length > 0) {
-          controls.enabled = false;
+          this.controls.enabled = false;
   
-          selectObj = intersects[0].object;
+          this.selectObj = intersects[0].object;
   
-          if (selectObj.name.includes("leftdoor")) {
-            this.openDoor(selectObj);
+          if (this.selectObj.name.includes("leftdoor")) {
+            this.openDoor(this.selectObj);
           }
-          if (selectObj.name.includes("rightdoor")) {
-            this.openDoor(selectObj, "right");
+          if (this.selectObj.name.includes("rightdoor")) {
+            this.openDoor(this.selectObj, "right");
           }
   
-          controls.enabled = true;
+          this.controls.enabled = true;
         }
       },
       onWindowResize() {
@@ -92,6 +90,7 @@ export default {
             side: THREE.DoubleSide
           });
         const result = new THREE.Mesh(geometry, materials);
+        return result
       },
       createMaterials(materials) {
         const materialsObj = new THREE.MeshLambertMaterial(materials || {
@@ -100,7 +99,7 @@ export default {
         });
         return materialsObj
       },
-      createMesh(geometry, materials, mesh) {
+      createMesh(geometry, materials) {
         const result = new THREE.Mesh(geometry, materials);
         return result
       },
