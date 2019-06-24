@@ -22,7 +22,7 @@ export default {
     {
       name: 'floor',
       modelType: 'floor',
-      box: [200, 160, 10], // x y z
+      box: [2000, 1600, 10], // x y z
       rotation: [0, 0, 0],
       position: [0, 0, 0],
       visible: true,
@@ -222,7 +222,7 @@ export default {
               position: [(room.height - 80) / 2, -80 / 4, 0],
               visible: true,
               name: 'rightdoor',
-              rotation: [0, 0, Math.PI / 2],
+              rotation: [0, 0, Math.PI/2],
               direction: 'right',
               enabledAxes: true,
               style: {

@@ -2,10 +2,19 @@ import * as THREE from 'three'
 const TWEEN = require('@tweenjs/tween.js')
 require('threebsp')
 
-export default {
+// let localObj = null
+
+const Tools =  {
   camera: null,
+  scene: null,
   selectObj: null,
   floor: 10,
+  addCamera(camera) {
+    this.camera = camera
+  },
+  addScene(scene) {
+    this.scene = scene
+  },
   openDoor(obj, doorDirection = 'left') {
     var doorstate = 'close'
     var tempobj = null
@@ -15,13 +24,14 @@ export default {
     } else {
       var objparent = obj.parent
       tempobj = new THREE.Group()
+
       tempobj.position.set(
-        obj.position.x + obj.geometry.parameters.width / 2,
+        doorDirection == 'left'? obj.position.x + obj.geometry.parameters.width / 2: obj.position.x - obj.geometry.parameters.width / 2,
         obj.position.y,
         obj.position.z
       )
 
-      obj.position.set(-obj.geometry.parameters.width / 2, 0, 0)
+      doorDirection == 'left'?obj.position.set(-obj.geometry.parameters.width / 2, 0, 0):obj.position.set(obj.geometry.parameters.width / 2, 0, 0)
 
       tempobj.add(obj)
 
@@ -34,7 +44,7 @@ export default {
         {
           y:
             doorstate == 'close'
-              ? (doorDirection == 'left' ? -3 / 5 : -3 / 5) * Math.PI
+              ? (doorDirection == 'left' ? -3 / 5 : 3 / 5) * Math.PI
               : 0 * (3 / 5) * Math.PI
         },
         10000
@@ -45,41 +55,41 @@ export default {
 
   onDocumentMouseDown(event) {
     //raycaster.setFromCamera(mouse, camera);
-
     var mouse = {}
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
-    var vector = new THREE.Vector3(mouse.x, mouse.y, 0).unproject(this.camera)
+    var vector = new THREE.Vector3(mouse.x, mouse.y, 0).unproject(Tools.camera)
 
     //在视点坐标系中形成射线,射线的起点向量是照相机， 射线的方向向量是照相机到点击的点，这个向量应该归一标准化。
     var raycaster = new THREE.Raycaster(
-      this.camera.position,
-      vector.sub(this.camera.position).normalize()
+      Tools.camera.position,
+      vector.sub(Tools.camera.position).normalize()
     )
 
-    var intersects = raycaster.intersectObjects(this.scene.children, true)
+    var intersects = raycaster.intersectObjects(Tools.scene.children, true)
 
     console.log(intersects, 'intersect......')
 
     if (intersects.length > 0) {
-      this.controls.enabled = false
+      //this.controls.enabled = false
 
-      this.selectObj = intersects[0].object
+      Tools.selectObj = intersects[0].object
 
-      if (this.selectObj.name.includes('leftdoor')) {
-        this.openDoor(this.selectObj)
+      if (Tools.selectObj.name.includes('leftdoor')) {
+        Tools.openDoor(Tools.selectObj)
       }
-      if (this.selectObj.name.includes('rightdoor')) {
-        this.openDoor(this.selectObj, 'right')
+      if (Tools.selectObj.name.includes('rightdoor')) {
+        Tools.openDoor(Tools.selectObj, 'right')
       }
 
-      this.controls.enabled = true
-    }
+      //this.controls.enabled = true
+   
+  }
   },
   onWindowResize() {
-    this.camera.aspect = window.innerWidth / window.innerHeight
-    this.camera.updateProjectionMatrix()
-    this.renderer.setSize(window.innerWidth, window.innerHeight)
+    Tools.camera.aspect = window.innerWidth / window.innerHeight
+    Tools.camera.updateProjectionMatrix()
+    Tools.renderer.setSize(window.innerWidth, window.innerHeight)
   },
   //创建盒子
   createBox(params) {
@@ -103,10 +113,10 @@ export default {
     if (!maps[name]) {
       throw new Error(`${name} not found`)
     }
+    
     let materials = Object.assign(
       {},
       {
-        color: 0xb0cee0,
         side: THREE.DoubleSide,
         vertexColors: THREE.FaceColors
       },
@@ -115,19 +125,19 @@ export default {
 
     return new maps[name](materials)
   },
-  createMaterials(params) {
+  createMaterials(params, name = 'lambert') {
     console.log(params, 'dddddd')
     const result = []
     const { skin = {} } = params || {}
     const faces = ['left', 'right', 'up', 'down', 'after', 'before']
     faces.forEach(key => {
-      let curSkin = skin[key] || {}
-      let { path = null } = curSkin
+      let curSkin = skin[key] ||null
+      let { path = null } = curSkin||{}
       let materialsObj
       if (!path) {
-        materialsObj = this.addMaterials(curSkin)
+        materialsObj = this.addMaterials(curSkin, name)
       } else {
-        materialsObj = this.addTexture(curSkin)
+        materialsObj = this.addTexture(curSkin, name)
       }
 
       result.push(materialsObj)
@@ -224,7 +234,7 @@ export default {
 
     group.position.copy(result.position)
     group.rotation.copy(result.rotation)
-    result.position.set(0, 0, 0)
+   result.position.set(0, 0, 0)
     result.rotation.set(0, 0, 0)
 
     // if (doors) {
@@ -380,3 +390,6 @@ export default {
     return this.createBox(params)
   }
 }
+
+
+export default Tools;

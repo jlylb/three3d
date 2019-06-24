@@ -40,6 +40,8 @@ export default {
       // scene.add(helper);
       console.log(controls, "controls.......");
       scene.add(camera);
+      Tools.addCamera(camera)
+      Tools.addScene(scene)
     },
     initRender() {
       var axis = new THREE.AxesHelper(200);
@@ -51,6 +53,12 @@ export default {
       renderer.setClearColor(0x225f93, 1.0);
       renderer.shadowMap.enabled = true;
       renderer.shadowMapSoft = true;
+           renderer.domElement.addEventListener(
+        "mousedown",
+        Tools.onDocumentMouseDown,
+        false
+      );
+
     },
     initLight() {
       light = new THREE.AmbientLight(0xcccccc);
@@ -162,7 +170,7 @@ export default {
       testdata.models.forEach(item => {
         switch (item.modelType) {
           case "room":
-            // scene.add(Tools.createWall(item))
+            scene.add(Tools.createWall(item))
             break;
           case "floor":
             scene.add(Tools.createFloor(item));
