@@ -185,6 +185,7 @@ const Tools =  {
     let result
     let sResult = new ThreeBSP(sObj)
     const tResult = new ThreeBSP(tObj)
+
     switch (op) {
       case '+':
         result = sResult.union(tResult)
@@ -197,12 +198,45 @@ const Tools =  {
         break
     }
     const materials = new THREE.MeshLambertMaterial({
-      color: 0xb0cee0,
-      side: THREE.DoubleSide
+     // color: 0xb0cee0,
+      side: THREE.DoubleSide,
+      vertexColors: THREE.FaceColors
     })
+    var cubeMaterialArray = [];
+        cubeMaterialArray.push(new THREE.MeshLambertMaterial({
+           color: 0xb0cee0,
+            vertexColors: THREE.FaceColors
+        }));
+        cubeMaterialArray.push(new THREE.MeshLambertMaterial({
+          color: 0xdddddd,
+          vertexColors: THREE.FaceColors
+      }));    
+        
+        
+    
     //result.material = materials;
     console.log(sObj, 'merge......')
-    return result.toMesh(materials)
+    var toResult = result.toMesh(cubeMaterialArray);
+    console.log(toResult, 'merge......1111111111')
+    
+    toResult.material.shading = THREE.FlatShading;
+    toResult.geometry.computeFaceNormals();
+    toResult.geometry.computeVertexNormals();
+    toResult.material.needsUpdate = true;
+    toResult.geometry.buffersNeedUpdate = true;
+    toResult.geometry.uvsNeedUpdate = true;
+    toResult.geometry.colorsNeedUpdate = true;
+    toResult.geometry.elementsNeedUpdate = true;
+
+
+    for(let i=0; i<toResult.geometry.faces.length;i++){
+      i > 29 && (toResult.geometry.faces[i].materialIndex = 1)
+
+      //(28< i< 38 ) && (toResult.geometry.faces[i].materialIndex = 0)
+    }
+
+toResult.geometry.faces[0].vertexColors=[0xff0000, 0x00ff00, 0x0000ff]
+    return toResult
   },
 
   addWall(params) {
@@ -212,11 +246,13 @@ const Tools =  {
     let result = this.createBox(params)
     //const material = result.material
     const group = new THREE.Group()
-
+    
     if (childrens && childrens.length > 0) {
       childrens.forEach(item => {
         if (item.modelType === 'hole') {
           result = this.createHoles(result, item)
+          var helper = new THREE.VertexNormalsHelper(result, 20, 0x00ff00, 10 );
+          group.add(helper)
         } else if (item.modelType === 'door') {
           group.add(this.createDoor(item, item))
         } else {
@@ -343,23 +379,23 @@ const Tools =  {
 
     const group = new THREE.Group()
 
-    const box1 = {
-      box: [width, thick, height],
-      position: [0, -length / 2, height / 2 + this.floor],
-      rotation: wall1.rotation,
-      style: this.getStyle(wall1),
-      childrens: wall1.childrens
-    }
-    group.add(this.addWall(box1))
+    // const box1 = {
+    //   box: [width, thick, height],
+    //   position: [0, -length / 2, height / 2 + this.floor],
+    //   rotation: wall1.rotation,
+    //   style: this.getStyle(wall1),
+    //   childrens: wall1.childrens
+    // }
+    // group.add(this.addWall(box1))
 
-    const box2 = {
-      box: [width, thick, height],
-      position: [0, length / 2, height / 2 + this.floor],
-      rotation: wall2.rotation,
-      style: this.getStyle(wall2),
-      childrens: wall2.childrens
-    }
-    group.add(this.addWall(box2))
+    // const box2 = {
+    //   box: [width, thick, height],
+    //   position: [0, length / 2, height / 2 + this.floor],
+    //   rotation: wall2.rotation,
+    //   style: this.getStyle(wall2),
+    //   childrens: wall2.childrens
+    // }
+    // group.add(this.addWall(box2))
 
     const box3 = {
       box: [height, length - thick, thick],

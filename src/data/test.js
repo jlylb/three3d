@@ -83,7 +83,7 @@ export default {
                 color: 0xb0cee0
               },
               after: {
-                color: 0xdeeeee
+                color: 0xdddddd
               },
               before: {
                 color: 0xb0cee0
@@ -120,10 +120,10 @@ export default {
             color: 0x8ac9e2,
             skin: {
               left: {
-                color: 0xdddddd
+                color: 0xb0cee0
               },
               right: {
-                color: 0xdddddd
+                color: 0xb0cee0
               },
               up: {
                 color: 0xb0cee0
@@ -132,7 +132,7 @@ export default {
                 color: 0xb0cee0
               },
               after: {
-                color: 0xdeeeee
+                color: 0xdddddd
               },
               before: {
                 color: 0xb0cee0
@@ -156,7 +156,7 @@ export default {
                 color: 0xdddddd
               },
               up: {
-                color: 0xb0cee0
+                color: 0xdddddd
               },
               down: {
                 color: 0xb0cee0
@@ -273,7 +273,7 @@ export default {
                 color: 0xb0cee0
               },
               after: {
-                color: 0xdeeeee
+                color: 0xb0cee0
               },
               before: {
                 color: 0xb0cee0
