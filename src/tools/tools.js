@@ -699,7 +699,7 @@ const Tools = {
     return plant
   },
   createPlan(params) {
-    const { width, offset } = params
+    const { width, offset, style } = params
 
     const position = {
       x: width / 2,
@@ -709,19 +709,23 @@ const Tools = {
     const plants = [
       {
         position: [-position.x + offset, position.y - offset, position.z],
-        rotation: [Math.PI / 2, 0, 0]
+        rotation: [Math.PI / 2, 0, 0],
+        style
       },
       {
         position: [-position.x + offset, -position.y + offset, position.z],
-        rotation: [Math.PI / 2, 0, 0]
+        rotation: [Math.PI / 2, 0, 0],
+        style
       },
       {
         position: [position.x - offset, position.y - offset, position.z],
-        rotation: [Math.PI / 2, 0, 0]
+        rotation: [Math.PI / 2, 0, 0],
+        style
       },
       {
         position: [position.x - offset, -position.y + offset, position.z],
-        rotation: [Math.PI / 2, 0, 0]
+        rotation: [Math.PI / 2, 0, 0],
+        style
       }
     ]
     const plantObj = []

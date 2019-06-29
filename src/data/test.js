@@ -1,6 +1,8 @@
 const drPng = require('../assets/door_right.png')
 const dlPng = require('../assets/door_left.png')
 const floorJpg = require('../assets/floor.jpg')
+
+const plantJpg = require('../assets/plant.png')
 export const room = {
   length: 300,
   width: 240,
@@ -360,6 +362,7 @@ export default {
       modelType: 'plant',
       width: 180, // x y z
       offset: 5,
+      style: plantJpg
     }
   ]
 }
