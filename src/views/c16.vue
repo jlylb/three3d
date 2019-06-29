@@ -135,12 +135,13 @@ export default {
       scene.add(mesh);
     },
     initObjects() {
-      this.createBox();
+      // this.createBox();
       //this.createTube();
       //this.createFloor();
       // this.addFlyLine();
       // this.addLine2();
       // this.addCurve();
+      this.createCricle();
     },
     createTube() {
       var radius = 10; // 管子的半径
@@ -205,7 +206,7 @@ export default {
       }
       requestAnimationFrame(this.render);
 
-      gModel.run()
+      gModel.run();
 
       renderer.render(scene, camera);
     },
@@ -386,6 +387,17 @@ export default {
       });
       var tube2 = new THREE.Mesh(tubeGeometry2, tubeMaterial2);
       scene.add(tube2);
+    },
+    createCricle() {
+      var radius = 40,
+        segments = 64,
+        material = new THREE.LineBasicMaterial({ color: 0x0000ff }),
+        geometry = new THREE.CircleGeometry(radius, segments);
+
+      // Remove center vertex
+      geometry.vertices.shift();
+
+      scene.add(new THREE.Line(geometry, material));
     }
   },
   mounted() {
@@ -395,7 +407,11 @@ export default {
     this.initObjects();
     this.initRender();
 
-    gModel.setScene(scene).setCamera(camera).setRenderer(renderer).addPerson()
+    // gModel
+    //   .setScene(scene)
+    //   .setCamera(camera)
+    //   .setRenderer(renderer)
+    //   .addPerson();
 
     this.render();
   }
