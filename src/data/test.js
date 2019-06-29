@@ -177,7 +177,30 @@ export default {
               rotation: [0, 0, 0],
               visible: true,
               box: [80, 80, room.thick],
-              position: [(room.height - 80) / 2, 0, 0]
+              position: [(room.height - 80) / 2, 0, 0],
+              style: {
+                color: 0x8ac9e2,
+                skin: {
+                  left: {
+                    color: 0xffdddd
+                  },
+                  right: {
+                    color: 0xffdddd
+                  },
+                  up: {
+                    color: 0xffdddd
+                  },
+                  down: {
+                    color: 0xdddddd
+                  },
+                  after: {
+                    color: 0xffdddd
+                  },
+                  before: {
+                    color: 0xffdddd
+                  }
+                }
+              }
             },
             {
               modelType: 'door',
@@ -222,7 +245,7 @@ export default {
               position: [(room.height - 80) / 2, -80 / 4, 0],
               visible: true,
               name: 'rightdoor',
-              rotation: [0, 0, Math.PI/2],
+              rotation: [0, 0, Math.PI / 2],
               direction: 'right',
               enabledAxes: true,
               style: {
@@ -283,6 +306,60 @@ export default {
           childrens: []
         }
       ]
+    },
+    //桌子
+    {
+      name: 'desk',
+      modelType: 'desk',
+      box: [60, 100, 30], // x y z
+      rotation: null,
+      position: [0, 0, 30 / 2 + 3],
+      sideHoles: [25, 80, 20],
+      holes: [10, 80, 30],
+      visible: true,
+      style: {
+        color: 0x8ac9e2,
+        skin: {
+          left: {
+            color: 0xb0cee0
+          },
+          right: {
+            color: 0xb0cee0
+          },
+          up: {
+            color: 0xb0cee0
+          },
+          down: {
+            color: 0xb0cee0
+          },
+          after: {
+            color: 0xb0cee0
+          },
+          before: {
+            color: 0xb0cee0
+          }
+        }
+      },
+      childrens: []
+    },
+    // 椅子
+    {
+      name: 'chair',
+      modelType: 'chair',
+      box: [20, 20, 2], // x y z
+      rotation: null,
+      holes: [2, 2, 20],
+      board: [2, 20, 10],
+      height: 20,
+      visible: true,
+
+      childrens: []
+    },
+    {
+      name: 'plant',
+      modelType: 'plant',
+      width: 180, // x y z
+      offset: 5,
     }
   ]
 }

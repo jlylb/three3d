@@ -8,6 +8,7 @@ import { OrbitControls } from "three/examples/js/controls/OrbitControls";
 
 import testdata from "@/data/test.js";
 import Tools from "@/tools/tools.js";
+import gModel from "@/tools/gmodel.js";
 
 let scene, camera, renderer, light, controls;
 
@@ -40,8 +41,8 @@ export default {
       // scene.add(helper);
       console.log(controls, "controls.......");
       scene.add(camera);
-      Tools.addCamera(camera)
-      Tools.addScene(scene)
+      Tools.addCamera(camera);
+      Tools.addScene(scene);
     },
     initRender() {
       var axis = new THREE.AxesHelper(200);
@@ -53,12 +54,11 @@ export default {
       renderer.setClearColor(0x225f93, 1.0);
       renderer.shadowMap.enabled = true;
       renderer.shadowMapSoft = true;
-           renderer.domElement.addEventListener(
+      renderer.domElement.addEventListener(
         "mousedown",
         Tools.onDocumentMouseDown,
         false
       );
-
     },
     initLight() {
       light = new THREE.AmbientLight(0xcccccc);
@@ -136,8 +136,11 @@ export default {
     },
     initObjects() {
       this.createBox();
-      // this.createTube();
+      //this.createTube();
       //this.createFloor();
+      // this.addFlyLine();
+      // this.addLine2();
+      // this.addCurve();
     },
     createTube() {
       var radius = 10; // 管子的半径
@@ -170,10 +173,25 @@ export default {
       testdata.models.forEach(item => {
         switch (item.modelType) {
           case "room":
-            scene.add(Tools.createWall(item))
+            scene.add(Tools.createWall(item));
             break;
           case "floor":
             scene.add(Tools.createFloor(item));
+            break;
+          case "desk":
+            scene.add(Tools.createDesk(item));
+            break;
+          case "chair":
+            const chairs = Tools.createChairs(item);
+            chairs.forEach(item => {
+              scene.add(item);
+            });
+            break;
+          case "plant":
+            const plants = Tools.createPlan(item);
+            plants.forEach(item => {
+              scene.add(item);
+            });
             break;
           default:
             break;
@@ -187,6 +205,8 @@ export default {
       }
       requestAnimationFrame(this.render);
 
+      gModel.run()
+
       renderer.render(scene, camera);
     },
 
@@ -194,6 +214,178 @@ export default {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
+    },
+
+    createFlyLine(startPoint, endPoint, heightLimit, flyTime, lineStyle) {
+      var middleCurvePositionX = (startPoint.x + endPoint.x) / 2;
+      var middleCurvePositionY = heightLimit;
+      var middleCurvePositionZ = (startPoint.z + endPoint.z) / 2;
+
+      var curveData = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(startPoint.x, startPoint.y, startPoint.z),
+        new THREE.Vector3(
+          middleCurvePositionX,
+          middleCurvePositionY,
+          middleCurvePositionZ
+        ),
+        new THREE.Vector3(endPoint.x, endPoint.y, endPoint.z)
+      ]);
+      var curveModelData = curveData.getPoints(50);
+
+      var curveGeometry = new THREE.Geometry();
+      curveGeometry.vertices = curveModelData.slice(0, 1);
+      var curveMaterial = new THREE.LineBasicMaterial({
+        color: lineStyle.color,
+        linewidth: lineStyle.linewidth
+      });
+      var curve = new THREE.Line(curveGeometry, curveMaterial);
+
+      var tween = new TWEEN.Tween({ endPointIndex: 1 }).to(
+        { endPointIndex: 50 },
+        flyTime
+      );
+      console.log(tween);
+      tween.onUpdate(function tweenHandler(data) {
+        console.log(data);
+        var endPointIndex = Math.ceil(data.endPointIndex);
+
+        var curvePartialData = new THREE.CatmullRomCurve3(
+          curveModelData.slice(0, endPointIndex)
+        );
+
+        curve.geometry.vertices = curvePartialData.getPoints(50);
+        curve.geometry.verticesNeedUpdate = true;
+      });
+
+      tween.start();
+
+      return curve;
+    },
+
+    addFlyLine() {
+      var startPoint = {
+        x: 0,
+        y: 0,
+        z: 0
+      };
+
+      var endPoint = {
+        x: -80,
+        y: 0,
+        z: 50
+      };
+
+      var heightLimit = 20;
+
+      var flyTime = 8000;
+
+      var lineStyle = {
+        color: 0xcc0000,
+        linewidth: 2
+      };
+      var aCurve = this.createFlyLine(
+        startPoint,
+        endPoint,
+        heightLimit,
+        flyTime,
+        lineStyle
+      );
+      scene.add(aCurve);
+    },
+    addLine2() {
+      var curve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(-2, 2, 0),
+        new THREE.Vector3(-1, 0.5, 0),
+        new THREE.Vector3(0, 1, 0),
+        new THREE.Vector3(1, 3, 0),
+        new THREE.Vector3(2, 1, 0)
+      ]);
+
+      var pointsCount = 50;
+      var pointsCount1 = pointsCount + 1;
+      var points = curve.getPoints(pointsCount);
+
+      var pts = curve.getPoints(pointsCount);
+      var width = 2;
+      var widthSteps = 1;
+      let pts2 = curve.getPoints(pointsCount);
+      pts2.forEach(p => {
+        p.z += width;
+      });
+      pts = pts.concat(pts2);
+
+      var ribbonGeom = new THREE.BufferGeometry().setFromPoints(pts);
+
+      var indices = [];
+      for (let iy = 0; iy < widthSteps; iy++) {
+        // the idea taken from PlaneBufferGeometry
+        for (let ix = 0; ix < pointsCount; ix++) {
+          var a = ix + pointsCount1 * iy;
+          var b = ix + pointsCount1 * (iy + 1);
+          var c = ix + 1 + pointsCount1 * (iy + 1);
+          var d = ix + 1 + pointsCount1 * iy;
+          // faces
+          indices.push(a, b, d);
+          indices.push(b, c, d);
+        }
+      }
+      ribbonGeom.setIndex(indices);
+      ribbonGeom.computeVertexNormals();
+
+      var ribbon = new THREE.Mesh(
+        ribbonGeom,
+        new THREE.MeshNormalMaterial({
+          side: THREE.DoubleSide
+        })
+      );
+      scene.add(ribbon);
+
+      var line = new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints(points),
+        new THREE.LineBasicMaterial({
+          color: "red",
+          depthTest: false
+        })
+      );
+      scene.add(line);
+    },
+    addCurve() {
+      var curve = new THREE.CatmullRomCurve3(
+        [
+          new THREE.Vector3(-80, -40, 0),
+          new THREE.Vector3(-70, 40, 0),
+          new THREE.Vector3(70, 40, 0),
+          new THREE.Vector3(80, -40, 0)
+        ],
+        false /*是否闭合*/
+      );
+      var tubeGeometry = new THREE.TubeGeometry(curve, 100, 0.6, 50, false);
+      var textureLoader = new THREE.TextureLoader();
+      var texture = textureLoader.load("run.jpg");
+      // 设置阵列模式为 RepeatWrapping
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      // 设置x方向的偏移(沿着管道路径方向)，y方向默认1
+      //等价texture.repeat= new THREE.Vector2(20,1)
+      texture.repeat.x = 20;
+      var tubeMaterial = new THREE.MeshPhongMaterial({
+        map: texture,
+        transparent: true
+      });
+      var tube = new THREE.Mesh(tubeGeometry, tubeMaterial);
+      scene.add(tube);
+      /**
+       * 创建一个半透明管道
+       */
+      var tubeGeometry2 = new THREE.TubeGeometry(curve, 100, 20, 50, false);
+      var tubeMaterial2 = new THREE.MeshPhongMaterial({
+        color: 0x4488ff,
+        transparent: true,
+        opacity: 0.3,
+        side: THREE.DoubleSide
+      });
+      var tube2 = new THREE.Mesh(tubeGeometry2, tubeMaterial2);
+      scene.add(tube2);
     }
   },
   mounted() {
@@ -203,10 +395,15 @@ export default {
     this.initObjects();
     this.initRender();
 
+    gModel.setScene(scene).setCamera(camera).setRenderer(renderer).addPerson()
+
     this.render();
   }
 };
 </script>
 
 <style>
+dd {
+  color: rgba(1, 1, 1);
+}
 </style>

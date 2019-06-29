@@ -4,7 +4,7 @@ require('threebsp')
 
 // let localObj = null
 
-const Tools =  {
+const Tools = {
   camera: null,
   scene: null,
   selectObj: null,
@@ -26,12 +26,16 @@ const Tools =  {
       tempobj = new THREE.Group()
 
       tempobj.position.set(
-        doorDirection == 'left'? obj.position.x + obj.geometry.parameters.width / 2: obj.position.x - obj.geometry.parameters.width / 2,
+        doorDirection == 'left'
+          ? obj.position.x + obj.geometry.parameters.width / 2
+          : obj.position.x - obj.geometry.parameters.width / 2,
         obj.position.y,
         obj.position.z
       )
 
-      doorDirection == 'left'?obj.position.set(-obj.geometry.parameters.width / 2, 0, 0):obj.position.set(obj.geometry.parameters.width / 2, 0, 0)
+      doorDirection == 'left'
+        ? obj.position.set(-obj.geometry.parameters.width / 2, 0, 0)
+        : obj.position.set(obj.geometry.parameters.width / 2, 0, 0)
 
       tempobj.add(obj)
 
@@ -83,8 +87,7 @@ const Tools =  {
       }
 
       //this.controls.enabled = true
-   
-  }
+    }
   },
   onWindowResize() {
     Tools.camera.aspect = window.innerWidth / window.innerHeight
@@ -101,7 +104,6 @@ const Tools =  {
     const materials = this.createMaterials(style, materialName)
 
     const result = this.createMesh(geometry, materials)
-
     return result
   },
   addMaterials(params, name = 'lambert') {
@@ -113,7 +115,7 @@ const Tools =  {
     if (!maps[name]) {
       throw new Error(`${name} not found`)
     }
-    
+
     let materials = Object.assign(
       {},
       {
@@ -126,13 +128,12 @@ const Tools =  {
     return new maps[name](materials)
   },
   createMaterials(params, name = 'lambert') {
-    console.log(params, 'dddddd')
     const result = []
     const { skin = {} } = params || {}
     const faces = ['left', 'right', 'up', 'down', 'after', 'before']
     faces.forEach(key => {
-      let curSkin = skin[key] ||null
-      let { path = null } = curSkin||{}
+      let curSkin = skin[key] || null
+      let { path = null } = curSkin || {}
       let materialsObj
       if (!path) {
         materialsObj = this.addMaterials(curSkin, name)
@@ -147,7 +148,6 @@ const Tools =  {
   },
   //添加材质
   addTexture(params) {
-    console.log(params, 'texture......')
     const texture = new THREE.TextureLoader().load(params.path)
 
     if (params.repeat) {
@@ -198,61 +198,59 @@ const Tools =  {
         break
     }
     const materials = new THREE.MeshLambertMaterial({
-     // color: 0xb0cee0,
+      // color: 0xb0cee0,
       side: THREE.DoubleSide,
       vertexColors: THREE.FaceColors
     })
-    var cubeMaterialArray = [];
-        cubeMaterialArray.push(new THREE.MeshLambertMaterial({
-           color: 0xb0cee0,
-            vertexColors: THREE.FaceColors
-        }));
-        cubeMaterialArray.push(new THREE.MeshLambertMaterial({
-          color: 0xdddddd,
-          vertexColors: THREE.FaceColors
-      }));    
-        
-        
-    
+    var cubeMaterialArray = []
+    cubeMaterialArray.push(
+      new THREE.MeshLambertMaterial({
+        color: 0xb0cee0,
+        vertexColors: THREE.FaceColors
+      })
+    )
+    cubeMaterialArray.push(
+      new THREE.MeshLambertMaterial({
+        // color: 0xdddddd,
+        vertexColors: THREE.FaceColors
+      })
+    )
+
     //result.material = materials;
     console.log(sObj, 'merge......')
-    var toResult = result.toMesh(cubeMaterialArray);
+    var toResult = result.toMesh(cubeMaterialArray)
     console.log(toResult, 'merge......1111111111')
-    
-    toResult.material.shading = THREE.FlatShading;
-    toResult.geometry.computeFaceNormals();
-    toResult.geometry.computeVertexNormals();
-    toResult.material.needsUpdate = true;
-    toResult.geometry.buffersNeedUpdate = true;
-    toResult.geometry.uvsNeedUpdate = true;
-    toResult.geometry.colorsNeedUpdate = true;
-    toResult.geometry.elementsNeedUpdate = true;
 
+    toResult.material.shading = THREE.FlatShading
+    toResult.geometry.computeFaceNormals()
+    toResult.geometry.computeVertexNormals()
+    toResult.material.needsUpdate = true
+    toResult.geometry.buffersNeedUpdate = true
+    toResult.geometry.uvsNeedUpdate = true
+    toResult.geometry.colorsNeedUpdate = true
+    toResult.geometry.elementsNeedUpdate = true
 
-    for(let i=0; i<toResult.geometry.faces.length;i++){
-      i > 29 && (toResult.geometry.faces[i].materialIndex = 1)
+    // for (let i = 0; i < toResult.geometry.faces.length; i++) {
+    //   i > 29 && (toResult.geometry.faces[i].materialIndex = 1)
 
-      //(28< i< 38 ) && (toResult.geometry.faces[i].materialIndex = 0)
-    }
+    //   //(28< i< 38 ) && (toResult.geometry.faces[i].materialIndex = 0)
+    // }
 
-toResult.geometry.faces[0].vertexColors=[0xff0000, 0x00ff00, 0x0000ff]
+    // toResult.geometry.faces[0].vertexColors=[0xff0000, 0x00ff00, 0x0000ff]
     return toResult
   },
 
   addWall(params) {
-    console.log(params, 'add wall......')
-    const { box, position, rotation, childrens } = params
+    const { position, rotation, childrens } = params
 
     let result = this.createBox(params)
-    //const material = result.material
+
     const group = new THREE.Group()
-    
+
     if (childrens && childrens.length > 0) {
       childrens.forEach(item => {
         if (item.modelType === 'hole') {
           result = this.createHoles(result, item)
-          var helper = new THREE.VertexNormalsHelper(result, 20, 0x00ff00, 10 );
-          group.add(helper)
         } else if (item.modelType === 'door') {
           group.add(this.createDoor(item, item))
         } else {
@@ -261,7 +259,6 @@ toResult.geometry.faces[0].vertexColors=[0xff0000, 0x00ff00, 0x0000ff]
       })
     }
 
-    // result.material = material
     result.position.set(...position)
 
     if (rotation) {
@@ -270,7 +267,7 @@ toResult.geometry.faces[0].vertexColors=[0xff0000, 0x00ff00, 0x0000ff]
 
     group.position.copy(result.position)
     group.rotation.copy(result.rotation)
-   result.position.set(0, 0, 0)
+    result.position.set(0, 0, 0)
     result.rotation.set(0, 0, 0)
 
     // if (doors) {
@@ -404,15 +401,46 @@ toResult.geometry.faces[0].vertexColors=[0xff0000, 0x00ff00, 0x0000ff]
       style: this.getStyle(wall3),
       childrens: wall3.childrens
     }
-    group.add(this.addWall(box3))
-    const box4 = {
-      box: [height, length - thick, thick],
-      position: [width / 2 - thick / 2, 0, height / 2 + this.floor],
+
+    const plan = {
+      box: [3, length - thick, 1],
+      position: [-width / 2 + thick / 2, 0, -height / 2 + this.floor],
       rotation: [0, Math.PI / 2, 0],
-      style: this.getStyle(wall4),
-      childrens: wall4.childrens
+      style: {
+        skin: {
+          left: {
+            color: 0xb0cee0
+          },
+          right: {
+            color: 0xb0cee0
+          },
+          up: {
+            color: 0xb0cee0
+          },
+          down: {
+            color: 0xb0cee0
+          },
+          after: {
+            color: 0xdddddd
+          },
+          before: {
+            color: 0xb0cee0
+          }
+        }
+      }
     }
-    group.add(this.addWall(box4))
+    const planObj = this.createBox(plan)
+    planObj.position.set(-width / 2 + thick / 2, 0, 130 + 0.5)
+    group.add(planObj)
+    group.add(this.addWall(box3))
+    // const box4 = {
+    //   box: [height, length - thick, thick],
+    //   position: [width / 2 - thick / 2, 0, height / 2 + this.floor],
+    //   rotation: [0, Math.PI / 2, 0],
+    //   style: this.getStyle(wall4),
+    //   childrens: wall4.childrens
+    // }
+    // group.add(this.addWall(box4))
     console.log(group, 'wall group.....')
     return group
   },
@@ -422,10 +450,287 @@ toResult.geometry.faces[0].vertexColors=[0xff0000, 0x00ff00, 0x0000ff]
     return style
   },
   createFloor(params) {
-    console.log(params, 'create floor..............')
     return this.createBox(params)
+  },
+  addDesk(params) {
+    const { position, rotation, childrens } = params
+
+    let result = this.createBox(params)
+
+    const group = new THREE.Group()
+
+    if (childrens && childrens.length > 0) {
+      childrens.forEach(item => {
+        result = this.createHoles(result, item)
+      })
+    }
+
+    result.position.set(...position)
+
+    if (rotation) {
+      result.rotation.set(...rotation)
+    }
+
+    group.position.copy(result.position)
+    group.rotation.copy(result.rotation)
+    result.position.set(0, 0, 0)
+    result.rotation.set(0, 0, 0)
+
+    //开启坐标
+    if (params.enabledAxes) {
+      group.add(this.createAxes())
+    }
+    //开启边框
+    if (params.enabledLine) {
+      const geom = result.geometry
+      const line = this.createEdges(geom)
+      group.add(line)
+    }
+
+    group.add(result)
+
+    return group
+  },
+  createDesk(params) {
+    const { sideHoles, holes, box } = params
+
+    const holeParams = {
+      box: holes,
+      position: [0, 0, 0]
+    }
+    const allHoles = [
+      holeParams,
+      {
+        box: sideHoles,
+        position: [
+          -box[0] / 2 + sideHoles[0] / 2,
+          0,
+          -(box[2] - sideHoles[2]) / 2
+        ]
+      },
+      {
+        box: sideHoles,
+        position: [
+          box[0] / 2 - sideHoles[0] / 2,
+          0,
+          -(box[2] - sideHoles[2]) / 2
+        ]
+      }
+    ]
+    allHoles.forEach(item => {
+      params.childrens.push(item)
+    })
+
+    return this.addDesk(params)
+  },
+  createChair(params) {
+    const { box, height, holes, board } = params
+
+    const x = box[0] / 2 - holes[0] / 2
+    const y = box[1] / 2 - holes[1] / 2
+
+    const desktop = {
+      box: box,
+      position: [-50, 0, holes[2] + box[2] / 2],
+      rotation: params.rotation,
+      name: params.name,
+      modelType: params.modelType,
+      childrens: [
+        {
+          box: holes,
+          position: [x, y, -holes[2] / 2],
+          op: '+'
+        },
+        {
+          box: holes,
+          position: [-x, y, -holes[2] / 2],
+          op: '+'
+        },
+        {
+          box: holes,
+          position: [-x, -y, -holes[2] / 2],
+          op: '+'
+        },
+        {
+          box: holes,
+          position: [x, -y, -holes[2] / 2],
+          op: '+'
+        },
+        {
+          box: holes,
+          position: [-x, y, holes[2] / 2],
+          op: '+'
+        },
+        {
+          box: holes,
+          position: [-x, -y, holes[2] / 2],
+          op: '+'
+        },
+        {
+          box: board,
+          position: [-x, 0, board[1]],
+          op: '+'
+        }
+      ]
+    }
+    return this.addChair(desktop)
+  },
+  addChair(params) {
+    const { position, rotation, childrens } = params
+
+    let result = this.createBox(params)
+
+    const group = new THREE.Group()
+
+    if (childrens && childrens.length > 0) {
+      childrens.forEach(item => {
+        result = this.createHoles(result, item)
+      })
+    }
+
+    result.position.set(...position)
+
+    if (rotation) {
+      result.rotation.set(...rotation)
+    }
+
+    group.position.copy(result.position)
+    group.rotation.copy(result.rotation)
+    result.position.set(0, 0, 0)
+    result.rotation.set(0, 0, 0)
+
+    //开启坐标
+    if (params.enabledAxes) {
+      group.add(this.createAxes())
+    }
+    //开启边框
+    if (params.enabledLine) {
+      const geom = result.geometry
+      const line = this.createEdges(geom)
+      group.add(line)
+    }
+
+    group.add(result)
+
+    return group
+  },
+  createChairs(params) {
+    const yOffset = 20 / 3
+
+    const chair1 = this.createChair(params)
+
+    var axis = new THREE.AxesHelper(50)
+
+    const leftGroup = new THREE.Group()
+
+    chair1.position.y = -40
+    leftGroup.add(chair1)
+    for (let i = 0; i < 3; i++) {
+      let chairObj = chair1.clone()
+      chairObj.position.y = -40 + (i + 1) * 20 + yOffset * (i + 1)
+      leftGroup.add(chairObj)
+    }
+
+    //scene.add(leftGroup);
+    const rightGroup = leftGroup.clone()
+    leftGroup.add(axis)
+    rightGroup.rotation.set(0, 0, Math.PI)
+    rightGroup.add(axis)
+    //scene.add(rightGroup);
+
+    const topGroup = new THREE.Group()
+    topGroup.position.set(0, 20, 0)
+    topGroup.rotation.set(0, 0, -Math.PI / 2)
+    for (let i = 0; i < 2; i++) {
+      let chairObj = chair1.clone()
+      chairObj.position.y = -20 + i * 20 + 20 * i
+      topGroup.add(chairObj)
+    }
+
+    //scene.add(topGroup);
+
+    const bottomGroup = topGroup.clone()
+    topGroup.add(axis)
+    bottomGroup.position.set(0, -20, 0)
+    bottomGroup.rotation.set(0, 0, Math.PI / 2)
+    bottomGroup.add(axis)
+
+    console.log(bottomGroup, 'bottom......')
+
+    // scene.add(bottomGroup);
+    return [leftGroup, rightGroup, topGroup, bottomGroup]
+  },
+  addPlant(params) {
+    const { position, rotation, scale = 15, style } = params
+    const plant = new THREE.Group()
+    const geometry = new THREE.CylinderBufferGeometry(0.15, 0.1, 0.4, 22)
+    const material = new THREE.MeshLambertMaterial({ color: 0xcccccc })
+
+    const cylinder = new THREE.Mesh(geometry, material)
+    cylinder.position.x = 0
+    cylinder.position.y = 0.2
+    cylinder.position.z = 0
+    plant.add(cylinder)
+
+    const leafTexture = new THREE.TextureLoader().load(style)
+    const leafMaterial = new THREE.MeshBasicMaterial({
+      map: leafTexture,
+      side: THREE.DoubleSide,
+      transparent: true
+    })
+    // var leafMaterial = new THREE.MeshBasicMaterial({
+    //   side: THREE.DoubleSide,
+    //   transparent: true
+    // });
+    const geom = new THREE.PlaneGeometry(0.4, 0.8)
+    for (var i = 0; i < 4; i++) {
+      var leaf = new THREE.Mesh(geom, leafMaterial)
+      leaf.position.y = 0.8
+      leaf.rotation.y = -Math.PI / (i + 1)
+      plant.add(leaf)
+    }
+    plant.position.x = position[0]
+    plant.position.y = position[1]
+    plant.position.z = position[2]
+    plant.scale.set(scale, scale, scale)
+    if (rotation) {
+      plant.rotation.set(...rotation)
+    }
+    return plant
+  },
+  createPlan(params) {
+    const { width, offset } = params
+
+    const position = {
+      x: width / 2,
+      y: width / 2,
+      z: 3
+    }
+    const plants = [
+      {
+        position: [-position.x + offset, position.y - offset, position.z],
+        rotation: [Math.PI / 2, 0, 0]
+      },
+      {
+        position: [-position.x + offset, -position.y + offset, position.z],
+        rotation: [Math.PI / 2, 0, 0]
+      },
+      {
+        position: [position.x - offset, position.y - offset, position.z],
+        rotation: [Math.PI / 2, 0, 0]
+      },
+      {
+        position: [position.x - offset, -position.y + offset, position.z],
+        rotation: [Math.PI / 2, 0, 0]
+      }
+    ]
+    const plantObj = []
+    plants.forEach(item => {
+      plantObj.push(this.addPlant(item))
+    })
+
+    return plantObj
   }
 }
 
-
-export default Tools;
+export default Tools
