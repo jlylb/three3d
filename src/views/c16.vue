@@ -3,14 +3,19 @@
 </template>
 
 <script>
+
+
 import * as THREE from "three";
+
 import { OrbitControls } from "three/examples/js/controls/OrbitControls";
 
 import testdata from "@/data/test.js";
 import Tools from "@/tools/tools.js";
 import gModel from "@/tools/gmodel.js";
 
-let scene, camera, renderer, light, controls;
+
+
+let scene, camera, renderer, light, controls, floor;
 
 const floorJpg = require("../assets/floor.jpg");
 
@@ -135,13 +140,13 @@ export default {
       scene.add(mesh);
     },
     initObjects() {
-      // this.createBox();
+      this.createBox();
       //this.createTube();
       //this.createFloor();
       // this.addFlyLine();
       // this.addLine2();
       // this.addCurve();
-      this.createCricle();
+      //this.createCricle();
     },
     createTube() {
       var radius = 10; // 管子的半径
@@ -177,7 +182,8 @@ export default {
             scene.add(Tools.createWall(item));
             break;
           case "floor":
-            scene.add(Tools.createFloor(item));
+          floor = Tools.createFloor(item)
+            scene.add(floor);
             break;
           case "desk":
             scene.add(Tools.createDesk(item));
@@ -398,7 +404,8 @@ export default {
       geometry.vertices.shift();
 
       scene.add(new THREE.Line(geometry, material));
-    }
+    },
+
   },
   mounted() {
     this.initScene();

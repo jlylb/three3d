@@ -68,25 +68,26 @@ export default {
           name: 'wall1',
           rotation: [0, 0, 0],
           position: [0, 0, 0],
-
+          start:[-500, 120, -350],
+          end:[500,120,-350],
           visible: true,
           style: {
             color: 0x8ac9e2,
             skin: {
               left: {
-                color: 0xdddddd
+                color: 0xb0cee0
               },
               right: {
-                color: 0xdddddd
+                color: 0xb0cee0
               },
               up: {
-                color: 0xb0cee0
+                color: 0xdddddd
               },
               down: {
                 color: 0xb0cee0
               },
               after: {
-                color: 0xdddddd
+                color: 0xb0cee0
               },
               before: {
                 color: 0xb0cee0
@@ -100,6 +101,9 @@ export default {
               op: '-',
               box: [60, room.thick, 60],
               position: [(room.width - 60) / 3, 0, 0],
+              start:[-400, 120, -350],
+              end: [-100, 120, -350],
+              height: 200,
               rotation: [0, 0, 0],
               visible: true
             },
@@ -110,6 +114,9 @@ export default {
               box: [60, room.thick, 60],
               position: [-(room.width - 60) / 3, 0, 0],
               rotation: [0, 0, 0],
+              start:[400, 120, -350],
+              end: [100, 120, -350],
+              height: 200,
               visible: true
             }
           ]
@@ -118,6 +125,8 @@ export default {
           name: 'wall2',
           rotation: [0, 0, 0],
           position: [0, 0, 0],
+          start:[-500, 120, 450],
+          end:[500,120,450],
           visible: true,
           style: {
             color: 0x8ac9e2,
@@ -148,6 +157,8 @@ export default {
           name: 'wall3',
           rotation: [0, 0, 0],
           position: [0, 0, 0],
+          start:[490, 120, -350],
+          end:[490,120,450],
           visible: true,
           style: {
             color: 0x8ac9e2,
@@ -181,6 +192,9 @@ export default {
               visible: true,
               box: [80, 80, room.thick],
               position: [(room.height - 80) / 2, 0, 0],
+              start:[490, 110, -60],
+              end:[490,110,160],
+              height: 220,
               style: {
                 color: 0x8ac9e2,
                 skin: {
@@ -207,21 +221,27 @@ export default {
             },
             {
               modelType: 'door',
-              width: 80,
-              height: 80,
+              // width: 80,
+              // height: 80,
               position: [(room.height - 80) / 2, 80 / 4, 0],
+              start:[0, 0, -110],
+              end:[0,0,0],
+              height: 220,
+              thick: 4,
               visible: true,
               name: 'leftdoor',
-              rotation: [0, 0, Math.PI / 2],
+             // rotation: [0, 0, Math.PI / 2],
               direction: 'left',
               enabledAxes: true,
               style: {
                 skin: {
                   left: {
-                    color: 0xdddddd
+                    color: 0xdddddd,
+                    path: drPng
                   },
                   right: {
-                    color: 0xdddddd
+                    color: 0xdddddd,
+                    path: dlPng
                   },
                   up: {
                     color: 0xb0cee0
@@ -231,11 +251,11 @@ export default {
                   },
                   after: {
                     color: 0xdeeeee,
-                    path: drPng
+                   
                   },
                   before: {
                     color: 0xb0cee0,
-                    path: dlPng
+                   
                   }
                 }
               }
@@ -246,32 +266,40 @@ export default {
               height: 80,
               // position: [0,0,0],
               position: [(room.height - 80) / 2, -80 / 4, 0],
+              start:[0, 0, 0],
+              end:[0,0,110],
+              height: 220,
+              thick: 4,
               visible: true,
               name: 'rightdoor',
-              rotation: [0, 0, Math.PI / 2],
+             // rotation: [0, 0, Math.PI / 2],
               direction: 'right',
               enabledAxes: true,
               style: {
                 skin: {
                   left: {
-                    color: 0xdddddd
+                    color: 0xdddddd,
+                    path: dlPng
                   },
                   right: {
-                    color: 0xdddddd
+                    color: 0xdddddd,
+                    path: drPng
                   },
                   up: {
-                    color: 0xb0cee0
+                    color: 0xb0cee0,
+                   
                   },
                   down: {
-                    color: 0xb0cee0
+                    color: 0xb0cee0,
+                   
                   },
                   after: {
                     color: 0xdeeeee,
-                    path: dlPng
+                    
                   },
                   before: {
                     color: 0xb0cee0,
-                    path: drPng
+                 
                   }
                 }
               }
@@ -282,6 +310,8 @@ export default {
           name: 'wall4',
           rotation: [0, 0, 0],
           position: [0, 0, 0],
+          start:[-490, 120, -350],
+          end:[-490,120,450],
           visible: true,
           style: {
             color: 0x8ac9e2,

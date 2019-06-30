@@ -24,18 +24,27 @@ const Tools = {
     } else {
       var objparent = obj.parent
       tempobj = new THREE.Group()
-
+tempobj.add(this.createAxes(300))
+      // tempobj.position.set(
+      //   doorDirection == 'left'
+      //     ? obj.position.x + obj.geometry.parameters.width / 2
+      //     : obj.position.x - obj.geometry.parameters.width / 2,
+      //   obj.position.y,
+      //   obj.position.z
+      // )
       tempobj.position.set(
-        doorDirection == 'left'
-          ? obj.position.x + obj.geometry.parameters.width / 2
-          : obj.position.x - obj.geometry.parameters.width / 2,
+obj.position.x,
         obj.position.y,
-        obj.position.z
+        doorDirection == 'left'
+        ? obj.position.z - obj.geometry.parameters.depth / 2
+        : obj.position.z + obj.geometry.parameters.depth / 2,
       )
 
+
+
       doorDirection == 'left'
-        ? obj.position.set(-obj.geometry.parameters.width / 2, 0, 0)
-        : obj.position.set(obj.geometry.parameters.width / 2, 0, 0)
+        ? obj.position.set( 0, 0, obj.geometry.parameters.depth / 2)
+        : obj.position.set( 0, 0, -obj.geometry.parameters.depth / 2)
 
       tempobj.add(obj)
 
@@ -48,7 +57,7 @@ const Tools = {
         {
           y:
             doorstate == 'close'
-              ? (doorDirection == 'left' ? -3 / 5 : 3 / 5) * Math.PI
+              ? (doorDirection == 'left' ? 3 / 5 : -3 / 5) * Math.PI
               : 0 * (3 / 5) * Math.PI
         },
         10000
@@ -94,16 +103,61 @@ const Tools = {
     Tools.camera.updateProjectionMatrix()
     Tools.renderer.setSize(window.innerWidth, window.innerHeight)
   },
+
+  //位置参数
+  getBoxParams(params, thick=20, height=240) {
+    const [ startX=0, startY=0, startZ=0 ] = params.start
+    const [ endX=0, endY=0, endZ=0 ] = params.end
+
+    const positionX = (startX + endX) / 2;
+    const positionY = (startY + endY) / 2;
+    const positionZ = (startZ + endZ) / 2;
+    let wallLength
+    let wallWidth
+    //z相同 表示x方向为长度
+    if (startZ == endZ) {
+        wallLength = Math.abs(startX - endX);
+        wallWidth = params.thick || thick;
+    } else if (startX == endX) {
+        wallLength = params.thick || thick;
+        wallWidth = Math.abs(startZ- endZ);
+    }
+    params.position = [positionX, positionY, positionZ]
+    params.box = [wallLength, params.height||height, wallWidth]
+console.log(params, wallLength, params.height||height, wallWidth, "box params............")
+    return params
+  },
   //创建盒子
   createBox(params) {
+   
+
+    if(params.start&&params.end) {
+      params = this.getBoxParams(params) 
+    }
     console.log(params, 'create box.....')
     const { box, style, materialName = 'lambert' } = params
 
+    // let boxParams = box
+
+    // if(start&&end) {
+    //   boxParams = this.getBoxParams(params) 
+    // }
+
     const geometry = new THREE.BoxGeometry(...box)
+
+
 
     const materials = this.createMaterials(style, materialName)
 
     const result = this.createMesh(geometry, materials)
+
+    if(params.position) {
+      result.position.set(...params.position)
+    }
+
+    if(params.rotation) {
+      result.rotation.set(...params.rotation)
+    }
     return result
   },
   addMaterials(params, name = 'lambert') {
@@ -238,6 +292,10 @@ const Tools = {
 
     let result = this.createBox(params)
 
+    console.log(result.position, result, "wall position........")
+
+    let pos = result.position;
+
     const group = new THREE.Group()
 
     if (childrens && childrens.length > 0) {
@@ -252,11 +310,11 @@ const Tools = {
       })
     }
 
-    result.position.set(...position)
+    // result.position.set(...position)
 
-    if (rotation) {
-      result.rotation.set(...rotation)
-    }
+    // if (rotation) {
+    //   result.rotation.set(...rotation)
+    // }
 
     group.position.copy(result.position)
     group.rotation.copy(result.rotation)
@@ -305,27 +363,23 @@ const Tools = {
   },
   createDoor(params, wall) {
     const door = {
-      box: [params.width / 2, params.height, 1],
-      position: [
-        (wall.height - params.height) / 2,
-        params.direction == 'left' ? params.height / 4 : -params.height / 4,
-        0
-      ],
+      start:params.start,
+      end:params.end,
       name: params.name,
       rotation: params.rotation,
       style: params.style,
       enabledAxes: params.enabledAxes
     }
-    return this.addDoor(door)
+    return this.addDoor(params)
   },
   addDoor(params) {
     const group = new THREE.Group()
-
+console.log('door...............')
     const result = this.createBox(params)
 
     result.name = params.name
 
-    result.position.set(...params.position)
+    // result.position.copy(result.position)
 
     if (params.rotation) {
       result.rotation.set(...params.rotation)
@@ -350,10 +404,10 @@ const Tools = {
       result.receiveShadow = true
     }
 
-    group.position.copy(result.position)
-    group.rotation.copy(result.rotation)
-    result.position.set(0, -20, 0)
-    result.rotation.set(0, 0, 0)
+   //group.position.copy(result.position)
+  // group.rotation.copy(result.rotation)
+    // result.position.set(0, -20, 0)
+    // result.rotation.set(0, 0, 0)
 
     group.add(result)
 
@@ -372,17 +426,21 @@ const Tools = {
     const box1 = {
       box: [width, thick, height],
       position: [0, -length / 2, height / 2 + this.floor],
-      rotation: wall1.rotation,
+     // rotation: wall1.rotation,
       style: this.getStyle(wall1),
-      childrens: wall1.childrens
+      start: wall1.start,
+      end: wall1.end,
+     childrens: wall1.childrens
     }
     group.add(this.addWall(box1))
 
     const box2 = {
       box: [width, thick, height],
       position: [0, length / 2, height / 2 + this.floor],
-      rotation: wall2.rotation,
+     // rotation: wall2.rotation,
       style: this.getStyle(wall2),
+      start: wall2.start,
+      end: wall2.end,
       childrens: wall2.childrens
     }
     group.add(this.addWall(box2))
@@ -390,8 +448,10 @@ const Tools = {
     const box3 = {
       box: [height, length - thick, thick],
       position: [-width / 2 + thick / 2, 0, height / 2 + this.floor],
-      rotation: [0, Math.PI / 2, 0],
+     // rotation: [0, Math.PI / 2, 0],
       style: this.getStyle(wall3),
+      start: wall3.start,
+      end: wall3.end,
       childrens: wall3.childrens
     }
 
@@ -429,8 +489,10 @@ const Tools = {
     const box4 = {
       box: [height, length - thick, thick],
       position: [width / 2 - thick / 2, 0, height / 2 + this.floor],
-      rotation: [0, Math.PI / 2, 0],
+     // rotation: [0, Math.PI / 2, 0],
       style: this.getStyle(wall4),
+      start: wall4.start,
+      end: wall4.end,
       childrens: wall4.childrens
     }
     group.add(this.addWall(box4))
