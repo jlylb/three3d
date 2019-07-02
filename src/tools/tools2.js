@@ -288,15 +288,20 @@ console.log(params, wallLength, params.height||height, wallWidth, "box params...
   },
 
   addWall(params) {
-    const { position, rotation, childrens } = params
+    const { position, rotation, childrens, start, end, style } = params
 
     let result = this.createBox(params)
+
+    
+
 
     console.log(result.position, result, "wall position........")
 
     let pos = result.position;
 
     const group = new THREE.Group()
+
+
 
     if (childrens && childrens.length > 0) {
       childrens.forEach(item => {
@@ -339,7 +344,19 @@ console.log(params, wallLength, params.height||height, wallWidth, "box params...
     }
 
     group.add(result)
+
+    const topParams = {
+      rotation, start, end, style, height: 1 , position
+    }
+
+    const topResult = this.createBox(topParams)
+    // topResult.position.copy(result.position)
+    // topResult.rotation.copy(result.position)
+    topResult.position.set(0, pos.y, 0)
+    topResult.rotation.set(0, 0, 0)
     //scene.add(group);
+
+    group.add(topResult)
 
     return group
   },

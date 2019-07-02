@@ -91,6 +91,25 @@ export default {
           case "room":
             scene.add(Tools.createWall(item));
             break;
+          case "floor":
+          floor = Tools.createFloor(item)
+            scene.add(floor);
+            break;
+          case "desk":
+            scene.add(Tools.createDesk(item));
+            break;
+          case "chair":
+            const chairs = Tools.createChairs(item);
+            chairs.forEach(item => {
+              scene.add(item);
+            });
+            break;
+          case "plant":
+            const plants = Tools.createPlan(item);
+            plants.forEach(item => {
+              scene.add(item);
+            });
+            break;
           default:
             break;
         }

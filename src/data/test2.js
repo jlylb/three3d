@@ -24,7 +24,7 @@ export default {
     {
       name: 'floor',
       modelType: 'floor',
-      box: [2000, 1600, 10], // x y z
+      box: [2000, 10, 1600], // x y z
       rotation: [0, 0, 0],
       position: [0, 0, 0],
       visible: true,
@@ -38,14 +38,15 @@ export default {
             color: 0xdddddd
           },
           up: {
-            color: 0xb0cee0
+            color: 0xb0cee0,
+            path: floorJpg,
+            repeat: true
           },
           down: {
             color: 0xb0cee0
           },
           after: {
-            path: floorJpg,
-            repeat: true
+            color: 0xb0cee0
           },
           before: {
             color: 0xb0cee0
@@ -138,13 +139,13 @@ export default {
                 color: 0xb0cee0
               },
               up: {
-                color: 0xb0cee0
+                color: 0xdddddd
               },
               down: {
                 color: 0xb0cee0
               },
               after: {
-                color: 0xdddddd
+                color: 0xb0cee0
               },
               before: {
                 color: 0xb0cee0
@@ -317,13 +318,13 @@ export default {
             color: 0x8ac9e2,
             skin: {
               left: {
-                color: 0xdddddd
+                color: 0xb0cee0
               },
               right: {
-                color: 0xdddddd
+                color: 0xb0cee0
               },
               up: {
-                color: 0xb0cee0
+                color: 0xdddddd
               },
               down: {
                 color: 0xb0cee0
