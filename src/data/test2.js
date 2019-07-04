@@ -1,6 +1,7 @@
 const drPng = require('../assets/door_right.png')
 const dlPng = require('../assets/door_left.png')
 const floorJpg = require('../assets/floor.jpg')
+const glassPng = require('../assets/glass.png')
 
 const plantJpg = require('../assets/plant.png')
 export const room = {
@@ -8,6 +9,22 @@ export const room = {
   width: 240,
   height: 120,
   thick: 3
+}
+/**
+ *
+ * @param int length 腿宽
+ * @param int boardWidth 盒子宽
+ * @param int distance 距中心点距离
+ * @param string direction 方向 left|right
+ */
+const getChair = (length, boardWidth, distance, direction = 'left') => {
+  let len
+  if (direction === 'left') {
+    len = distance + boardWidth / 2 - length / 2
+  } else {
+    len = distance + length / 2
+  }
+  return len
 }
 
 export default {
@@ -69,8 +86,8 @@ export default {
           name: 'wall1',
           rotation: [0, 0, 0],
           position: [0, 0, 0],
-          start:[-500, 120, -350],
-          end:[500,120,-350],
+          start: [-500, 120, -350],
+          end: [500, 120, -350],
           visible: true,
           style: {
             color: 0x8ac9e2,
@@ -100,9 +117,7 @@ export default {
               name: '',
               modelType: 'hole',
               op: '-',
-              box: [60, room.thick, 60],
-              position: [(room.width - 60) / 3, 0, 0],
-              start:[-400, 120, -350],
+              start: [-400, 120, -350],
               end: [-100, 120, -350],
               height: 200,
               rotation: [0, 0, 0],
@@ -112,13 +127,39 @@ export default {
               name: '',
               modelType: 'hole',
               op: '-',
-              box: [60, room.thick, 60],
-              position: [-(room.width - 60) / 3, 0, 0],
               rotation: [0, 0, 0],
-              start:[400, 120, -350],
+              start: [400, 120, -350],
               end: [100, 120, -350],
               height: 200,
               visible: true
+            },
+            {
+              name: 'glass1',
+              modelType: 'glass',
+              start: [-400, 0, 0],
+              end: [-100, 0, 0],
+              height: 200,
+              thick: 1,
+              visible: true,
+              style: {
+                transparent: true,
+                opacity: 0.1,
+                path: glassPng
+              }
+            },
+            {
+              name: 'glass2',
+              modelType: 'glass',
+              start: [400, 0, 0],
+              end: [100, 0, 0],
+              height: 200,
+              thick: 1,
+              visible: true,
+              style: {
+                transparent: true,
+                opacity: 0.1,
+                path: glassPng
+              }
             }
           ]
         },
@@ -126,8 +167,8 @@ export default {
           name: 'wall2',
           rotation: [0, 0, 0],
           position: [0, 0, 0],
-          start:[-500, 120, 450],
-          end:[500,120,450],
+          start: [-500, 120, 450],
+          end: [500, 120, 450],
           visible: true,
           style: {
             color: 0x8ac9e2,
@@ -158,8 +199,8 @@ export default {
           name: 'wall3',
           rotation: [0, 0, 0],
           position: [0, 0, 0],
-          start:[490, 120, -350],
-          end:[490,120,450],
+          start: [490, 120, -350],
+          end: [490, 120, 450],
           visible: true,
           style: {
             color: 0x8ac9e2,
@@ -191,11 +232,9 @@ export default {
               op: '-',
               rotation: [0, 0, 0],
               visible: true,
-              box: [80, 80, room.thick],
-              position: [(room.height - 80) / 2, 0, 0],
-              start:[490, 110, -60],
-              end:[490,110,160],
-              height: 220,
+              start: [490, 110, -60],
+              end: [490, 110, 160],
+              height: 210,
               style: {
                 color: 0x8ac9e2,
                 skin: {
@@ -222,18 +261,15 @@ export default {
             },
             {
               modelType: 'door',
-              // width: 80,
-              // height: 80,
-              position: [(room.height - 80) / 2, 80 / 4, 0],
-              start:[0, 0, -110],
-              end:[0,0,0],
-              height: 220,
+              start: [0, -10, -110],
+              end: [0, -10, 0],
+              height: 210,
               thick: 4,
               visible: true,
               name: 'leftdoor',
-             // rotation: [0, 0, Math.PI / 2],
               direction: 'left',
               enabledAxes: true,
+              enabledLine: true,
               style: {
                 skin: {
                   left: {
@@ -251,29 +287,22 @@ export default {
                     color: 0xb0cee0
                   },
                   after: {
-                    color: 0xdeeeee,
-                   
+                    color: 0xdeeeee
                   },
                   before: {
-                    color: 0xb0cee0,
-                   
+                    color: 0xb0cee0
                   }
                 }
               }
             },
             {
               modelType: 'door',
-              width: 80,
-              height: 80,
-              // position: [0,0,0],
-              position: [(room.height - 80) / 2, -80 / 4, 0],
-              start:[0, 0, 0],
-              end:[0,0,110],
-              height: 220,
+              start: [0, -10, 0],
+              end: [0, -10, 110],
+              height: 210,
               thick: 4,
               visible: true,
               name: 'rightdoor',
-             // rotation: [0, 0, Math.PI / 2],
               direction: 'right',
               enabledAxes: true,
               style: {
@@ -287,20 +316,16 @@ export default {
                     path: drPng
                   },
                   up: {
-                    color: 0xb0cee0,
-                   
+                    color: 0xb0cee0
                   },
                   down: {
-                    color: 0xb0cee0,
-                   
+                    color: 0xb0cee0
                   },
                   after: {
-                    color: 0xdeeeee,
-                    
+                    color: 0xdeeeee
                   },
                   before: {
-                    color: 0xb0cee0,
-                 
+                    color: 0xb0cee0
                   }
                 }
               }
@@ -311,8 +336,8 @@ export default {
           name: 'wall4',
           rotation: [0, 0, 0],
           position: [0, 0, 0],
-          start:[-490, 120, -350],
-          end:[-490,120,450],
+          start: [-490, 120, -350],
+          end: [-490, 120, 450],
           visible: true,
           style: {
             color: 0x8ac9e2,
@@ -347,10 +372,16 @@ export default {
       modelType: 'desk',
       box: [60, 100, 30], // x y z
       rotation: null,
-      position: [0, 0, 30 / 2 + 3],
-      sideHoles: [25, 80, 20],
+      position: [0, 0, 0],
+      start: [-300, 35, 30],
+      end: [300, 35, 30],
+      height: 60,
+      thick: 180,
+      sideHoles: [280, 40, 180],
       holes: [10, 80, 30],
       visible: true,
+      enabledAxes: true,
+      enabledLine: true,
       style: {
         color: 0x8ac9e2,
         skin: {
@@ -364,7 +395,7 @@ export default {
             color: 0xb0cee0
           },
           down: {
-            color: 0xb0cee0
+            color: 0xff0000
           },
           after: {
             color: 0xb0cee0
@@ -374,20 +405,80 @@ export default {
           }
         }
       },
-      childrens: []
+      childrens: [
+        {
+          modelType: 'hole',
+          start: [-280, 35, 30],
+          end: [280, 35, 30],
+          height: 60,
+          thick: 40,
+          op: '-'
+        },
+        {
+          modelType: 'hole',
+          start: [-280, 25, 30],
+          end: [280, 25, 30],
+          height: 40,
+          thick: 180,
+          op: '-'
+        }
+      ]
     },
     // 椅子
     {
-      name: 'chair',
+      name: 'board',
       modelType: 'chair',
-      box: [20, 20, 2], // x y z
-      rotation: null,
-      holes: [2, 2, 20],
-      board: [2, 20, 10],
-      height: 20,
-      visible: true,
-
-      childrens: []
+      start: [-240, 25, -100],
+      end: [-260, 25, -100],
+      height: 2,
+      thick: 20,
+      childrens: [
+        {
+          name: 'left_1',
+          modelType: 'hole',
+          start: [-256, 25, -109],
+          end: [-260, 25, -109],
+          height: 40,
+          thick: 2,
+          op: '+'
+        },
+        {
+          name: 'left_2',
+          modelType: 'hole',
+          start: [-240, 25, -109],
+          end: [-244, 25, -109],
+          height: 40,
+          thick: 2,
+          op: '+'
+        },
+        {
+          name: 'right_1',
+          modelType: 'hole',
+          start: [-256, 15, -91],
+          end: [-260, 15, -91],
+          height: 20,
+          thick: 2,
+          op: '+'
+        },
+        {
+          name: 'right_2',
+          modelType: 'hole',
+          start: [-240, 15, -91],
+          end: [-244, 15, -91],
+          height: 20,
+          thick: 2,
+          op: '+'
+        },
+        {
+          name: 'side_board',
+          modelType: 'hole',
+          start: [-240, 41, -109],
+          end: [-260, 41, -109],
+          height: 8,
+          thick: 2,
+          op: '+'
+        }
+      ]
     },
     {
       name: 'plant',

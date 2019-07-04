@@ -3,8 +3,6 @@
 </template>
 
 <script>
-
-
 import * as THREE from "three";
 
 import { OrbitControls } from "three/examples/js/controls/OrbitControls";
@@ -12,11 +10,7 @@ import { OrbitControls } from "three/examples/js/controls/OrbitControls";
 import testdata from "@/data/test2.js";
 import Tools from "@/tools/tools2.js";
 
-
-
-
 let scene, camera, renderer, light, controls, floor;
-
 
 const TWEEN = require("@tweenjs/tween.js");
 require("threebsp");
@@ -49,7 +43,7 @@ export default {
       Tools.addScene(scene);
     },
     initRender() {
-      var axis = new THREE.AxesHelper(200);
+      var axis = new THREE.AxesHelper(1200);
       // 在场景中添加坐标轴
       scene.add(axis);
       renderer = new THREE.WebGLRenderer();
@@ -82,8 +76,8 @@ export default {
     },
 
     initObjects() {
-     this.createBox1();
-
+      this.createBox1();
+      this.addLine2();
     },
     createBox1() {
       testdata.models.forEach(item => {
@@ -92,7 +86,7 @@ export default {
             scene.add(Tools.createWall(item));
             break;
           case "floor":
-          floor = Tools.createFloor(item)
+            floor = Tools.createFloor(item);
             scene.add(floor);
             break;
           case "desk":
@@ -115,91 +109,34 @@ export default {
         }
       });
     },
+    addLine2() {
+      var curve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(-350, 10, -300),
 
-  createBox() {
-    const box1 = {
-          name: '',
-          modelType: 'hole',
-          op: '-',
-          position: [0, 0, 0],
-          rotation: [0, -Math.PI/4, 0],
-          visible: true,
-          box: [80, 80, 80],
-          start:[-500, 120, -350],
-          end:[500,120,-350],
-    } 
-    const box2 = {
-          name: '',
-          modelType: 'hole',
-          op: '-',
-          position: [0, 0, 0],
-          rotation: [0, -Math.PI/4, 0],
-          visible: true,
-          box: [80, 80, 80],
-          start:[-500, 120, 450],
-          end:[500,120,450],
-    } 
-    const box3 = {
-          name: '',
-          modelType: 'hole',
-          op: '-',
-          position: [0, 0, 0],
-          rotation: [0, -Math.PI/4, 0],
-          visible: true,
-          box: [80, 80, 80],
-          start:[490, 120, -350],
-          end:[490,120,450],
-    } 
-    const box4 = {
-          name: '',
-          modelType: 'hole',
-          op: '-',
-          position: [0, 0, 0],
-          rotation: [0, -Math.PI/4, 0],
-          visible: true,
-          box: [80, 80, 80],
-          start:[-490, 120, -350],
-          end:[-490,120,450],
-    } 
-    // const boxObj1 = Tools.createBox(box1)
-    // boxObj1.geometry.faces[0].color.setHex(0x00ff00)
-    // scene.add(boxObj1)
+        new THREE.Vector3(-350, 10, 300),
 
-    const params = [box1, box2, box3, box4]
-    this.createWall(params)
-  },
+        new THREE.Vector3(350, 10, 300),
 
+        new THREE.Vector3(350, 10, -300),
 
-createWall(params) {
-      var _commonThick =  40;//墙体厚度
-    var _commonLength =  100;//墙体厚度
-    var _commonHeight =  300;//强体高度
-    var _commonSkin =  0x98750f;
-  params.forEach((wallobj)=>{
-        var wallLength = _commonLength;
-        var wallWidth = wallobj.thick||_commonThick;
-        var positionX = ((wallobj.start[0]||0) + (wallobj.end[0]||0)) / 2;
-        var positionY = ((wallobj.start[1] || 0) + (wallobj.end[1] || 0)) / 2;
-        var positionZ = ((wallobj.start[2] || 0) + (wallobj.end[2] || 0)) / 2;
-        //z相同 表示x方向为长度
-        if (wallobj.start[2] == wallobj.end[2]) {
-            wallLength = Math.abs(wallobj.start[0] - wallobj.end[0]);
-            wallWidth = wallobj.thick || _commonThick;
-        } else if (wallobj.start[0] == wallobj.end[0]) {
-            wallLength = wallobj.thick || _commonThick;
-            wallWidth = Math.abs(wallobj.start[2]- wallobj.end[2]);
-        }
+        new THREE.Vector3(-350, 10, -300)
+      ]);
 
-        let param = {
-            box: [wallLength,  wallobj.height || _commonHeight, wallWidth],
-            position: [positionX, positionY, positionZ],
-            rotation: null,
-        }
+      var pointsCount = 50;
+      var pointsCount1 = pointsCount + 1;
+      var points = curve.getPoints(pointsCount);
 
-        scene.add(Tools.createBox(param))
-  })
-},
-
+      var line = new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints(points),
+        new THREE.LineBasicMaterial({
+          color: "red",
+          depthTest: false,
+          side: THREE.DoubleSide
+        })
+      );
+      line.position.set(0, 12, 0);
+      scene.add(line);
+    },
     render() {
       if (TWEEN != null && typeof TWEEN != "undefined") {
         TWEEN.update();
@@ -207,15 +144,7 @@ createWall(params) {
       requestAnimationFrame(this.render);
 
       renderer.render(scene, camera);
-    },
-
-
-
-
-
-
-
-
+    }
   },
   mounted() {
     this.initScene();
@@ -223,7 +152,6 @@ createWall(params) {
     this.initLight();
     this.initObjects();
     this.initRender();
-
 
     this.render();
   }

@@ -24,27 +24,19 @@ const Tools = {
     } else {
       var objparent = obj.parent
       tempobj = new THREE.Group()
-tempobj.add(this.createAxes(300))
-      // tempobj.position.set(
-      //   doorDirection == 'left'
-      //     ? obj.position.x + obj.geometry.parameters.width / 2
-      //     : obj.position.x - obj.geometry.parameters.width / 2,
-      //   obj.position.y,
-      //   obj.position.z
-      // )
+      // tempobj.add(this.createAxes(300))
+
       tempobj.position.set(
-obj.position.x,
+        obj.position.x,
         obj.position.y,
         doorDirection == 'left'
-        ? obj.position.z - obj.geometry.parameters.depth / 2
-        : obj.position.z + obj.geometry.parameters.depth / 2,
+          ? obj.position.z - obj.geometry.parameters.depth / 2
+          : obj.position.z + obj.geometry.parameters.depth / 2
       )
 
-
-
       doorDirection == 'left'
-        ? obj.position.set( 0, 0, obj.geometry.parameters.depth / 2)
-        : obj.position.set( 0, 0, -obj.geometry.parameters.depth / 2)
+        ? obj.position.set(0, 0, obj.geometry.parameters.depth / 2)
+        : obj.position.set(0, 0, -obj.geometry.parameters.depth / 2)
 
       tempobj.add(obj)
 
@@ -103,59 +95,109 @@ obj.position.x,
     Tools.camera.updateProjectionMatrix()
     Tools.renderer.setSize(window.innerWidth, window.innerHeight)
   },
+  //添加模型
+  addObject(params) {
+    const { rotation, childrens } = params
 
+    let result = this.createBox(params)
+
+    //模型原坐标
+    let pos = result.position
+
+    const group = new THREE.Group()
+
+    if (childrens && childrens.length > 0) {
+      childrens.forEach(item => {
+        if (item.modelType === 'hole') {
+          result = this.createHoles(result, item)
+        } else if (item.modelType === 'door') {
+          group.add(this.createDoor(item, item))
+        } else {
+          group.add(this.createBox(item))
+        }
+      })
+    }
+
+    group.position.copy(pos)
+    group.rotation.copy(result.rotation)
+    result.position.set(0, 0, 0)
+    result.rotation.set(0, 0, 0)
+
+    if (params.name) {
+      result.name = params.name
+    }
+
+    if (rotation) {
+      result.rotation.set(...rotation)
+    }
+
+    //开启阴影
+    if (params.enabledShadow) {
+      result.castShadow = true
+    }
+    //接收阴影
+    if (params.enabledReceive) {
+      result.receiveShadow = true
+    }
+
+    //开启坐标
+    if (params.enabledAxes) {
+      group.add(this.createAxes(params.AxesLen || null))
+    }
+
+    //开启边框
+    if (params.enabledLine) {
+      const geom = result.geometry
+      const line = this.createEdges(geom)
+      group.add(line)
+    }
+
+    group.add(result)
+
+    return group
+  },
   //位置参数
-  getBoxParams(params, thick=20, height=240) {
-    const [ startX=0, startY=0, startZ=0 ] = params.start
-    const [ endX=0, endY=0, endZ=0 ] = params.end
+  getBoxParams(params, thick = 20, height = 240) {
+    const [startX = 0, startY = 0, startZ = 0] = params.start
+    const [endX = 0, endY = 0, endZ = 0] = params.end
 
-    const positionX = (startX + endX) / 2;
-    const positionY = (startY + endY) / 2;
-    const positionZ = (startZ + endZ) / 2;
+    const positionX = (startX + endX) / 2
+    const positionY = (startY + endY) / 2
+    const positionZ = (startZ + endZ) / 2
     let wallLength
     let wallWidth
     //z相同 表示x方向为长度
     if (startZ == endZ) {
-        wallLength = Math.abs(startX - endX);
-        wallWidth = params.thick || thick;
+      wallLength = Math.abs(startX - endX)
+      wallWidth = params.thick || thick
     } else if (startX == endX) {
-        wallLength = params.thick || thick;
-        wallWidth = Math.abs(startZ- endZ);
+      wallLength = params.thick || thick
+      wallWidth = Math.abs(startZ - endZ)
     }
     params.position = [positionX, positionY, positionZ]
-    params.box = [wallLength, params.height||height, wallWidth]
-console.log(params, wallLength, params.height||height, wallWidth, "box params............")
+    params.box = [wallLength, params.height || height, wallWidth]
+
     return params
   },
   //创建盒子
   createBox(params) {
-   
-
-    if(params.start&&params.end) {
-      params = this.getBoxParams(params) 
+    if (params.start && params.end) {
+      params = this.getBoxParams(params)
     }
-    console.log(params, 'create box.....')
+
     const { box, style, materialName = 'lambert' } = params
 
-    // let boxParams = box
-
-    // if(start&&end) {
-    //   boxParams = this.getBoxParams(params) 
-    // }
-
     const geometry = new THREE.BoxGeometry(...box)
-
-
 
     const materials = this.createMaterials(style, materialName)
 
     const result = this.createMesh(geometry, materials)
 
-    if(params.position) {
+    if (params.position) {
       result.position.set(...params.position)
     }
 
-    if(params.rotation) {
+    if (params.rotation) {
       result.rotation.set(...params.rotation)
     }
     return result
@@ -181,20 +223,26 @@ console.log(params, wallLength, params.height||height, wallWidth, "box params...
 
     return new maps[name](materials)
   },
+  getSkin(data, name) {
+    let { path = null } = data || {}
+    let materialsObj
+    if (!path) {
+      materialsObj = this.addMaterials(data, name)
+    } else {
+      materialsObj = this.addTexture(data, name)
+    }
+    return materialsObj
+  },
   createMaterials(params, name = 'lambert') {
     const result = []
-    const { skin = {} } = params || {}
+    const { skin = null } = params || {}
+    if (!skin) {
+      return this.getSkin(params, name)
+    }
     const faces = ['left', 'right', 'up', 'down', 'after', 'before']
     faces.forEach(key => {
       let curSkin = skin[key] || null
-      let { path = null } = curSkin || {}
-      let materialsObj
-      if (!path) {
-        materialsObj = this.addMaterials(curSkin, name)
-      } else {
-        materialsObj = this.addTexture(curSkin, name)
-      }
-
+      let materialsObj = this.getSkin(curSkin, name)
       result.push(materialsObj)
     })
 
@@ -235,7 +283,7 @@ console.log(params, wallLength, params.height||height, wallWidth, "box params...
     const axis = new THREE.AxesHelper(len)
     return axis
   },
-  merge(op, sObj, tObj) {
+  merge(op, sObj, tObj, toMaterial) {
     let result
     let sResult = new ThreeBSP(sObj)
     const tResult = new ThreeBSP(tObj)
@@ -252,28 +300,12 @@ console.log(params, wallLength, params.height||height, wallWidth, "box params...
         break
     }
     const materials = new THREE.MeshLambertMaterial({
-      // color: 0xb0cee0,
+      color: 0xb0cee0,
       side: THREE.DoubleSide,
       vertexColors: THREE.FaceColors
     })
-    var cubeMaterialArray = []
-    cubeMaterialArray.push(
-      new THREE.MeshLambertMaterial({
-        color: 0xb0cee0,
-        vertexColors: THREE.FaceColors
-      })
-    )
-    cubeMaterialArray.push(
-      new THREE.MeshLambertMaterial({
-        // color: 0xdddddd,
-        vertexColors: THREE.FaceColors
-      })
-    )
 
-    //result.material = materials;
-    console.log(sObj, 'merge......')
-    var toResult = result.toMesh(cubeMaterialArray)
-    console.log(toResult, 'merge......1111111111')
+    var toResult = result.toMesh(toMaterial || materials)
 
     toResult.material.shading = THREE.FlatShading
     toResult.geometry.computeFaceNormals()
@@ -288,73 +320,23 @@ console.log(params, wallLength, params.height||height, wallWidth, "box params...
   },
 
   addWall(params) {
-    const { position, rotation, childrens, start, end, style } = params
+    const { position, rotation, start, end, style } = params
 
-    let result = this.createBox(params)
+    const group = this.addObject(params)
 
-    
-
-
-    console.log(result.position, result, "wall position........")
-
-    let pos = result.position;
-
-    const group = new THREE.Group()
-
-
-
-    if (childrens && childrens.length > 0) {
-      childrens.forEach(item => {
-        if (item.modelType === 'hole') {
-          result = this.createHoles(result, item)
-        } else if (item.modelType === 'door') {
-          group.add(this.createDoor(item, item))
-        } else {
-          group.add(this.createBox(item))
-        }
-      })
-    }
-
-    // result.position.set(...position)
-
-    // if (rotation) {
-    //   result.rotation.set(...rotation)
-    // }
-
-    group.position.copy(result.position)
-    group.rotation.copy(result.rotation)
-    result.position.set(0, 0, 0)
-    result.rotation.set(0, 0, 0)
-
-    // if (doors) {
-    //   doors.forEach(item => {
-    //     let door = this.addDoor(item);
-    //     group.add(door);
-    //   });
-    // }
-    //开启坐标
-    if (params.enabledAxes) {
-      group.add(this.createAxes())
-    }
-    //开启边框
-    if (params.enabledLine) {
-      const geom = result.geometry
-      const line = this.createEdges(geom)
-      group.add(line)
-    }
-
-    group.add(result)
-
+    //顶部横条颜色
     const topParams = {
-      rotation, start, end, style, height: 1 , position
+      rotation,
+      start,
+      end,
+      style,
+      height: 1,
+      position
     }
 
     const topResult = this.createBox(topParams)
-    // topResult.position.copy(result.position)
-    // topResult.rotation.copy(result.position)
-    topResult.position.set(0, pos.y, 0)
+    topResult.position.set(0, group.position.y, 0)
     topResult.rotation.set(0, 0, 0)
-    //scene.add(group);
 
     group.add(topResult)
 
@@ -362,14 +344,11 @@ console.log(params, wallLength, params.height||height, wallWidth, "box params...
   },
 
   addHole(box, hole) {
-    //const { style = null } = hole
     const holeCube = this.createBox(hole)
 
     holeCube.position.set(...hole.position)
 
     const resultBSP = this.merge(hole.op, box, holeCube)
-
-    //result = resultBSP.toMesh();
 
     return resultBSP
   },
@@ -378,142 +357,22 @@ console.log(params, wallLength, params.height||height, wallWidth, "box params...
     let result = this.addHole(box, hole)
     return result
   },
-  createDoor(params, wall) {
-    const door = {
-      start:params.start,
-      end:params.end,
-      name: params.name,
-      rotation: params.rotation,
-      style: params.style,
-      enabledAxes: params.enabledAxes
-    }
+  createDoor(params) {
     return this.addDoor(params)
   },
   addDoor(params) {
-    const group = new THREE.Group()
-console.log('door...............')
-    const result = this.createBox(params)
-
-    result.name = params.name
-
-    // result.position.copy(result.position)
-
-    if (params.rotation) {
-      result.rotation.set(...params.rotation)
-    }
-
-    //开启坐标
-    if (params.enabledAxes) {
-      group.add(this.createAxes())
-    }
-    //开启边框
-    if (params.enabledLine) {
-      const line = this.createEdges(result.geometry)
-      group.add(line)
-    }
-
-    //开启阴影
-    if (params.enabledShadow) {
-      result.castShadow = true
-    }
-    //接收阴影
-    if (params.enabledReceive) {
-      result.receiveShadow = true
-    }
-
-   //group.position.copy(result.position)
-  // group.rotation.copy(result.rotation)
-    // result.position.set(0, -20, 0)
-    // result.rotation.set(0, 0, 0)
-
-    group.add(result)
-
-    return group
+    return this.addObject(params)
   },
 
   createWall(params) {
-    const {
-      room: { length, width, height, thick },
-      walls
-    } = params
-    const [wall1, wall2, wall3, wall4] = walls
+    const { walls } = params
 
     const group = new THREE.Group()
 
-    const box1 = {
-      box: [width, thick, height],
-      position: [0, -length / 2, height / 2 + this.floor],
-     // rotation: wall1.rotation,
-      style: this.getStyle(wall1),
-      start: wall1.start,
-      end: wall1.end,
-     childrens: wall1.childrens
-    }
-    group.add(this.addWall(box1))
+    walls.forEach(item => {
+      group.add(this.addWall(item))
+    })
 
-    const box2 = {
-      box: [width, thick, height],
-      position: [0, length / 2, height / 2 + this.floor],
-     // rotation: wall2.rotation,
-      style: this.getStyle(wall2),
-      start: wall2.start,
-      end: wall2.end,
-      childrens: wall2.childrens
-    }
-    group.add(this.addWall(box2))
-
-    const box3 = {
-      box: [height, length - thick, thick],
-      position: [-width / 2 + thick / 2, 0, height / 2 + this.floor],
-     // rotation: [0, Math.PI / 2, 0],
-      style: this.getStyle(wall3),
-      start: wall3.start,
-      end: wall3.end,
-      childrens: wall3.childrens
-    }
-
-    const plan = {
-      box: [3, length - thick, 1],
-      position: [-width / 2 + thick / 2, 0, -height / 2 + this.floor],
-      rotation: [0, Math.PI / 2, 0],
-      style: {
-        skin: {
-          left: {
-            color: 0xb0cee0
-          },
-          right: {
-            color: 0xb0cee0
-          },
-          up: {
-            color: 0xb0cee0
-          },
-          down: {
-            color: 0xb0cee0
-          },
-          after: {
-            color: 0xdddddd
-          },
-          before: {
-            color: 0xb0cee0
-          }
-        }
-      }
-    }
-    const planObj = this.createBox(plan)
-    planObj.position.set(-width / 2 + thick / 2, 0, 130 + 0.5)
-    group.add(planObj)
-    group.add(this.addWall(box3))
-    const box4 = {
-      box: [height, length - thick, thick],
-      position: [width / 2 - thick / 2, 0, height / 2 + this.floor],
-     // rotation: [0, Math.PI / 2, 0],
-      style: this.getStyle(wall4),
-      start: wall4.start,
-      end: wall4.end,
-      childrens: wall4.childrens
-    }
-    group.add(this.addWall(box4))
-    console.log(group, 'wall group.....')
     return group
   },
   getStyle(params) {
@@ -525,188 +384,39 @@ console.log('door...............')
     return this.createBox(params)
   },
   addDesk(params) {
-    const { position, rotation, childrens } = params
-
-    let result = this.createBox(params)
-
-    const group = new THREE.Group()
-
-    if (childrens && childrens.length > 0) {
-      childrens.forEach(item => {
-        result = this.createHoles(result, item)
-      })
-    }
-
-    result.position.set(...position)
-
-    if (rotation) {
-      result.rotation.set(...rotation)
-    }
-
-    group.position.copy(result.position)
-    group.rotation.copy(result.rotation)
-    result.position.set(0, 0, 0)
-    result.rotation.set(0, 0, 0)
-
-    //开启坐标
-    if (params.enabledAxes) {
-      group.add(this.createAxes())
-    }
-    //开启边框
-    if (params.enabledLine) {
-      const geom = result.geometry
-      const line = this.createEdges(geom)
-      group.add(line)
-    }
-
-    group.add(result)
-
-    return group
+    return this.addObject(params)
   },
   createDesk(params) {
-    const { sideHoles, holes, box } = params
-
-    const holeParams = {
-      box: holes,
-      position: [0, 0, 0]
-    }
-    const allHoles = [
-      holeParams,
-      {
-        box: sideHoles,
-        position: [
-          -box[0] / 2 + sideHoles[0] / 2,
-          0,
-          -(box[2] - sideHoles[2]) / 2
-        ]
-      },
-      {
-        box: sideHoles,
-        position: [
-          box[0] / 2 - sideHoles[0] / 2,
-          0,
-          -(box[2] - sideHoles[2]) / 2
-        ]
-      }
-    ]
-    allHoles.forEach(item => {
-      params.childrens.push(item)
-    })
-
     return this.addDesk(params)
   },
   createChair(params) {
-    const { box, height, holes, board } = params
-
-    const x = box[0] / 2 - holes[0] / 2
-    const y = box[1] / 2 - holes[1] / 2
-
-    const desktop = {
-      box: box,
-      position: [-50, 0, holes[2] + box[2] / 2],
-      rotation: params.rotation,
-      name: params.name,
-      modelType: params.modelType,
-      childrens: [
-        {
-          box: holes,
-          position: [x, y, -holes[2] / 2],
-          op: '+'
-        },
-        {
-          box: holes,
-          position: [-x, y, -holes[2] / 2],
-          op: '+'
-        },
-        {
-          box: holes,
-          position: [-x, -y, -holes[2] / 2],
-          op: '+'
-        },
-        {
-          box: holes,
-          position: [x, -y, -holes[2] / 2],
-          op: '+'
-        },
-        {
-          box: holes,
-          position: [-x, y, holes[2] / 2],
-          op: '+'
-        },
-        {
-          box: holes,
-          position: [-x, -y, holes[2] / 2],
-          op: '+'
-        },
-        {
-          box: board,
-          position: [-x, 0, board[1]],
-          op: '+'
-        }
-      ]
-    }
-    return this.addChair(desktop)
+    return this.addChair(params)
   },
   addChair(params) {
-    const { position, rotation, childrens } = params
-
-    let result = this.createBox(params)
-
-    const group = new THREE.Group()
-
-    if (childrens && childrens.length > 0) {
-      childrens.forEach(item => {
-        result = this.createHoles(result, item)
-      })
-    }
-
-    result.position.set(...position)
-
-    if (rotation) {
-      result.rotation.set(...rotation)
-    }
-
-    group.position.copy(result.position)
-    group.rotation.copy(result.rotation)
-    result.position.set(0, 0, 0)
-    result.rotation.set(0, 0, 0)
-
-    //开启坐标
-    if (params.enabledAxes) {
-      group.add(this.createAxes())
-    }
-    //开启边框
-    if (params.enabledLine) {
-      const geom = result.geometry
-      const line = this.createEdges(geom)
-      group.add(line)
-    }
-
-    group.add(result)
-
-    return group
+    return this.addObject(params)
   },
   createChairs(params) {
-    const yOffset = 20 / 3
-
+    const offset = 10
+    const [startX] = params.start
     const chair1 = this.createChair(params)
 
     var axis = new THREE.AxesHelper(50)
 
     const leftGroup = new THREE.Group()
 
-    chair1.position.y = -40
+    //chair1.position.y = -40
     leftGroup.add(chair1)
-    for (let i = 0; i < 3; i++) {
+    for (let i = 1; i < 18; i++) {
       let chairObj = chair1.clone()
-      chairObj.position.y = -40 + (i + 1) * 20 + yOffset * (i + 1)
+      chairObj.position.x = startX + offset * i + (2 * i - 1) * 10
       leftGroup.add(chairObj)
     }
 
     //scene.add(leftGroup);
     const rightGroup = leftGroup.clone()
     leftGroup.add(axis)
-    rightGroup.rotation.set(0, 0, Math.PI)
+    rightGroup.position.z = 50
+    rightGroup.rotation.set(0, Math.PI, 0)
     rightGroup.add(axis)
     //scene.add(rightGroup);
 
@@ -727,13 +437,11 @@ console.log('door...............')
     bottomGroup.rotation.set(0, 0, Math.PI / 2)
     bottomGroup.add(axis)
 
-    console.log(bottomGroup, 'bottom......')
-
     // scene.add(bottomGroup);
-    return [leftGroup, rightGroup, topGroup, bottomGroup]
+    return [leftGroup, rightGroup]
   },
   addPlant(params) {
-    const { position, rotation, scale = 15, style } = params
+    const { position, rotation, scale = 80, style } = params
     const plant = new THREE.Group()
     const geometry = new THREE.CylinderBufferGeometry(0.15, 0.1, 0.4, 22)
     const material = new THREE.MeshLambertMaterial({ color: 0xcccccc })
@@ -750,10 +458,7 @@ console.log('door...............')
       side: THREE.DoubleSide,
       transparent: true
     })
-    // var leafMaterial = new THREE.MeshBasicMaterial({
-    //   side: THREE.DoubleSide,
-    //   transparent: true
-    // });
+
     const geom = new THREE.PlaneGeometry(0.4, 0.8)
     for (var i = 0; i < 4; i++) {
       var leaf = new THREE.Mesh(geom, leafMaterial)
@@ -771,32 +476,23 @@ console.log('door...............')
     return plant
   },
   createPlan(params) {
-    const { width, offset, style } = params
+    const { style } = params
 
-    const position = {
-      x: width / 2,
-      y: width / 2,
-      z: 3
-    }
     const plants = [
       {
-        position: [-position.x + offset, position.y - offset, position.z],
-        rotation: [Math.PI / 2, 0, 0],
+        position: [-470, 5, 430],
         style
       },
       {
-        position: [-position.x + offset, -position.y + offset, position.z],
-        rotation: [Math.PI / 2, 0, 0],
+        position: [-470, 5, -330],
         style
       },
       {
-        position: [position.x - offset, position.y - offset, position.z],
-        rotation: [Math.PI / 2, 0, 0],
+        position: [470, 5, 430],
         style
       },
       {
-        position: [position.x - offset, -position.y + offset, position.z],
-        rotation: [Math.PI / 2, 0, 0],
+        position: [470, 5, -330],
         style
       }
     ]
