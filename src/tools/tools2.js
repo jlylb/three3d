@@ -179,6 +179,44 @@ const Tools = {
 
     return params
   },
+  addCameraHelper(camera) {
+    let cameraHelper
+    let parent
+    if (camera instanceof THREE.Camera) {
+      parent = new THREE.Group()
+      parent.add(camera)
+      cameraHelper = new THREE.CameraHelper(camera)
+      parent.add(cameraHelper)
+      const cameraEye = new THREE.Mesh(
+        new THREE.SphereBufferGeometry(10),
+        new THREE.MeshBasicMaterial({ color: 0xff0000 })
+      )
+      cameraEye.position.copy(camera.position)
+      parent.add(cameraEye)
+    }
+    return parent
+  },
+  addGroupCamera() {
+    const parent = new THREE.Group()
+    const splineCamera = new THREE.PerspectiveCamera(
+      84,
+      window.innerWidth / window.innerHeight,
+      0.01,
+      1000
+    )
+
+    parent.add(splineCamera)
+    const cameraHelper = new THREE.CameraHelper(splineCamera)
+    parent.add(cameraHelper)
+    const cameraEye = new THREE.Mesh(
+      new THREE.SphereBufferGeometry(10),
+      new THREE.MeshBasicMaterial({ color: 0xff0000 })
+    )
+    cameraEye.position.copy(splineCamera.position)
+    parent.add(cameraEye)
+
+    return parent
+  },
   //创建盒子
   createBox(params) {
     if (params.start && params.end) {

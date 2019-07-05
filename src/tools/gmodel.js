@@ -40,11 +40,11 @@ const Models = {
       this.setModel(model)
       model.position.set(0, 0, 3)
       // model.up.set(0, 0, 1);
-      model.rotation.set(Math.PI / 2, 0, 0)
+      model.rotation.set(0, Math.PI / 2, 0)
       var axis = new THREE.AxesHelper(50)
       // 在场景中添加坐标轴
       model.add(axis)
-      model.scale.set(20, 20, 20)
+      model.scale.set(100, 100, 100)
       this.scene.add(model)
       model.visible = true
       model.traverse(function(object) {
