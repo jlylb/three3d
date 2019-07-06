@@ -41,6 +41,8 @@ var tubeGeometry;
 
 let labelRenderer;
 
+var controls1;
+
 const TWEEN = require("@tweenjs/tween.js");
 require("threebsp");
 
@@ -393,6 +395,8 @@ export default {
       //this.animation2();
       renderer.render(scene, camera);
 
+      controls1 && controls1.update();
+
       // console.log(camera.position, "render camera....");
     },
     labelRender() {
@@ -410,7 +414,7 @@ export default {
       labelRenderer.domElement.style.position = "absolute";
       labelRenderer.domElement.style.top = 0;
       document.body.appendChild(labelRenderer.domElement);
-      var controls1 = new OrbitControls(camera, labelRenderer.domElement);
+      controls1 = new OrbitControls(camera, labelRenderer.domElement);
       labelRenderer.render(scene, camera);
     }
   },
