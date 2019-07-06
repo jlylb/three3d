@@ -40,7 +40,7 @@ const Models = {
       this.setModel(model)
       model.position.set(0, 0, 3)
       // model.up.set(0, 0, 1);
-      model.rotation.set(0, Math.PI / 2, 0)
+      model.rotation.set(0, -Math.PI / 2, 0)
       var axis = new THREE.AxesHelper(50)
       // 在场景中添加坐标轴
       model.add(axis)

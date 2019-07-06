@@ -7,6 +7,13 @@ import * as THREE from "three";
 
 import { OrbitControls } from "three/examples/js/controls/OrbitControls";
 
+import {
+  CSS2DObject,
+  CSS2DRenderer
+} from "three/examples/js/renderers/CSS2DRenderer";
+
+// import { CSS2DObject, CSS2DRenderer } from "@/plugin/CSS2DRenderer";
+
 import testdata from "@/data/test2.js";
 import Tools from "@/tools/tools2.js";
 
@@ -26,6 +33,13 @@ let isEnter = true;
 let ldoor, rdoor;
 
 let progress = 0;
+
+var binormal = new THREE.Vector3();
+var normal = new THREE.Vector3();
+
+var tubeGeometry;
+
+let labelRenderer;
 
 const TWEEN = require("@tweenjs/tween.js");
 require("threebsp");
@@ -139,21 +153,19 @@ export default {
 
         new THREE.Vector3(-350, 10, 300),
 
-        new THREE.Vector3(-350, 10, 0),
-
         new THREE.Vector3(-350, 10, -200),
 
         new THREE.Vector3(350, 10, -200),
 
         new THREE.Vector3(350, 10, 0),
 
-        new THREE.Vector3(600, 10, 0),
-        new THREE.Vector3(600, 10, 100)
+        new THREE.Vector3(600, 10, 0)
 
         //new THREE.Vector3(-350, 10, -200)
       ]);
-      this.getvv(curve);
-      var pointsCount = 50;
+      curve.closed = true;
+
+      var pointsCount = 100;
       var pointsCount1 = pointsCount + 1;
       var points = curve.getPoints(pointsCount);
 
@@ -172,16 +184,17 @@ export default {
       line.position.set(0, 12, 0);
       scene.add(line);
 
-      var tubeGeometry2 = new THREE.TubeGeometry(curve, 100, 20, 50, false);
+      tubeGeometry = new THREE.TubeGeometry(curve, 100, 20, 50, false);
       var tubeMaterial2 = new THREE.MeshPhongMaterial({
         color: 0x4488ff,
         transparent: true,
         opacity: 0.3,
         side: THREE.DoubleSide
       });
-      console.log(tubeGeometry2, "log.......");
-      var tube2 = new THREE.Mesh(tubeGeometry2, tubeMaterial2);
+      console.log(tubeGeometry, "log.......");
+      var tube2 = new THREE.Mesh(tubeGeometry, tubeMaterial2);
       scene.add(tube2);
+      this.getvv(curve);
     },
     getvv(curve) {
       var time = Date.now();
@@ -189,18 +202,20 @@ export default {
       var t = (time % looptime) / looptime;
       var pos = curve.getPointAt(t);
 
-      var segments = 50;
-      var pickt = t * segments;
-      var pick = Math.floor(pickt);
-      var pickNext = (pick + 1) % segments;
+      var points = curve.getPoints(100);
+      var point0 = points[0].normalize();
 
-      console.log(pickt, pick, pickNext, "picker.......");
+      console.log(
+        point0,
+        "picker.......",
+        point0.cross(tubeGeometry.tangents[0])
+      );
 
       sphere1 = new THREE.Mesh(
         new THREE.SphereBufferGeometry(5),
         new THREE.MeshBasicMaterial({ color: 0x00ff00 * Math.random() })
       );
-      var points = curve.getPoints(50);
+      var points = curve.getPoints(100);
       for (let point of points) {
         const sphere = new THREE.Mesh(
           new THREE.SphereBufferGeometry(3),
@@ -215,43 +230,41 @@ export default {
       console.log(pos, curve.getLength(), "get vvv...............");
     },
     animationSphere() {
-      if (progress > 1.0) {
+      if (progress > 0.99) {
         progress = 0;
       }
       progress += 0.0003;
       // console.log(progress);
       if (curve) {
-        let point = curve.getPoint(progress);
+        let point = curve.getPointAt(progress);
         let curPoint = point;
-        let nextPoint = curve.getPoint(progress + 0.0003);
+        let nextPoint = curve.getPointAt(progress + 0.0003);
         let angle = curPoint.angleTo(nextPoint);
 
         var dir = curve.getTangentAt(progress);
 
-        // console.log(
-        //   curPoint.angleTo(nextPoint),
-        //   dir,
-        //   dir.normalize(),
-        //   angle,
-        //   "animation point....."
-        // );
-
         if (point) {
-          console.log(dir, point, angle, "animation point.......");
+          // console.log(dir, point, angle, "animation point.......");
           sphere1.position.copy(point);
           // otherCamera.position.copy(point);
           const [camera2, chelper, sphere] = otherCamera.children;
           camera2.position.copy(point);
-          // otherCamera.children[0].lookAt(point);
-          // if (dir.z > 0) {
-          //   camera2.rotation.y += angle;
-          //   chelper.rotation.y += angle;
-          // } else {
-          //   camera2.rotation.y -= angle;
-          //   chelper.rotation.y -= angle;
-          // }
-          camera2.rotation.y += angle;
+
           chelper.rotation.y += angle;
+
+          var lookAt = nextPoint.multiplyScalar(1);
+
+          camera2.matrix.lookAt(camera2.position, lookAt, {
+            x: 0,
+            y: 0,
+            z: 0
+          });
+
+          camera2.rotation.setFromRotationMatrix(
+            camera2.matrix,
+            camera2.rotation.order
+          );
+          // console.log(camera2.rotation, "animation camera2.......");
           chelper.position.copy(point);
           sphere.position.copy(point);
 
@@ -261,15 +274,75 @@ export default {
           const mObject = gModel.getModel();
           if (mObject) {
             mObject.position.copy(point);
-            if (dir.z > 0) {
-              mObject.rotation.y -= angle;
-            } else {
-              mObject.rotation.y += angle;
-            }
+
             //mObject.rotation.y += angle;
             // mObject.rotateY(angle);
+
+            mObject.matrix.lookAt(camera2.position, lookAt, {
+              x: 0,
+              y: 0,
+              z: 0
+            });
+            mObject.rotation.setFromRotationMatrix(
+              mObject.matrix,
+              mObject.rotation.order
+            );
           }
         }
+      }
+    },
+    animation2() {
+      const [camera2, chelper, sphere] = otherCamera.children;
+      var scale = 1;
+      var time = Date.now();
+      var looptime = 50 * 1000;
+      var t = (time % looptime) / looptime;
+      var pos = tubeGeometry.parameters.path.getPointAt(t);
+      pos.multiplyScalar(scale);
+      // interpolation
+      var segments = tubeGeometry.tangents.length;
+      var pickt = t * segments;
+      var pick = Math.floor(pickt);
+      var pickNext = (pick + 1) % segments;
+      binormal.subVectors(
+        tubeGeometry.binormals[pickNext],
+        tubeGeometry.binormals[pick]
+      );
+      binormal.multiplyScalar(pickt - pick).add(tubeGeometry.binormals[pick]);
+      var dir = tubeGeometry.parameters.path.getTangentAt(t);
+      var offset = 15;
+      normal.copy(binormal).cross(dir);
+      // we move on a offset on its binormal
+      pos.add(normal.clone().multiplyScalar(offset));
+      camera2.position.copy(pos);
+      sphere.position.copy(pos);
+      // using arclength for stablization in look ahead
+      var lookAt = tubeGeometry.parameters.path
+        .getPointAt((t + 30 / tubeGeometry.parameters.path.getLength()) % 1)
+        .multiplyScalar(scale);
+      // camera orientation 2 - up orientation via normal
+      console.log(
+        lookAt,
+        "look at.......",
+        tubeGeometry.parameters.path.getLength()
+      );
+      camera2.matrix.lookAt(camera2.position, lookAt, normal);
+      camera2.rotation.setFromRotationMatrix(
+        camera2.matrix,
+        camera2.rotation.order
+      );
+
+      chelper.update();
+
+      const mObject = gModel.getModel();
+      if (mObject) {
+        mObject.position.copy(pos);
+
+        mObject.matrix.lookAt(mObject.position, lookAt, normal);
+        mObject.rotation.setFromRotationMatrix(
+          mObject.matrix,
+          mObject.rotation.order
+        );
       }
     },
     openAutoDoor(point) {
@@ -293,7 +366,7 @@ export default {
           isOpen = false;
         }
       } else {
-        console.log(x, isOpen, isEnter, "var.......");
+        // console.log(x, isOpen, isEnter, "var.......");
         if (530 < x && x < 550 && isOpen) {
           this.openDoor();
           isOpen = false;
@@ -317,9 +390,28 @@ export default {
       }
       requestAnimationFrame(this.render);
       this.animationSphere();
+      //this.animation2();
       renderer.render(scene, camera);
 
       // console.log(camera.position, "render camera....");
+    },
+    labelRender() {
+      var moonDiv = document.createElement("div");
+      moonDiv.className = "label";
+      moonDiv.textContent = "Moon";
+      moonDiv.style.marginTop = "-1em";
+      var moonLabel = new THREE.CSS2DObject(moonDiv);
+      moonLabel.position.set(0, 10, 0);
+
+      scene.getObjectByName("desk").add(moonLabel);
+
+      labelRenderer = new THREE.CSS2DRenderer();
+      labelRenderer.setSize(100, 100);
+      labelRenderer.domElement.style.position = "absolute";
+      labelRenderer.domElement.style.top = 0;
+      document.body.appendChild(labelRenderer.domElement);
+      var controls1 = new OrbitControls(camera, labelRenderer.domElement);
+      labelRenderer.render(scene, camera);
     }
   },
   mounted() {
@@ -338,6 +430,7 @@ export default {
     //   .setRenderer(renderer)
     //   .addPerson();
     this.render();
+    this.labelRender();
   }
 };
 </script>

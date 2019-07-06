@@ -86,7 +86,19 @@ const Tools = {
       if (Tools.selectObj.name.includes('rightdoor')) {
         Tools.openDoor(Tools.selectObj, 'right')
       }
+      console.log(Tools.selectObj.isMesh, 'click.......')
 
+      const parent = Tools.selectObj.parent
+
+      if (Tools.selectObj.isMesh && parent.type === 'Group') {
+        const children = parent.children
+        const line = children[children.length - 1]
+        if (line.type === 'LineSegments') {
+          parent.remove(line)
+        } else {
+          parent.add(Tools.createEdges(Tools.selectObj.geometry))
+        }
+      }
       //this.controls.enabled = true
     }
   },
