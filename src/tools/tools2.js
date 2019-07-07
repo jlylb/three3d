@@ -582,34 +582,47 @@ const Tools = {
     ]);
     //curve.closed = true;
 
-    var pointsCount = 50;
+    // var pointsCount = 50;
 
-    var points = curve.getPoints(pointsCount);
-    var material = new THREE.LineBasicMaterial({
-      color: 0x0000ff
-    });
+    // var points = curve.getPoints(pointsCount);
+    // var material = new THREE.LineBasicMaterial({
+    //   color: 0x0000ff
+    // });
     
-    var geometry = new THREE.Geometry();
-    geometry.setFromPoints(points);
+    // var geometry = new THREE.Geometry();
+    // geometry.setFromPoints(points);
     // geometry.vertices.push(...points)
-    var pointArr = []
-    var line = new THREE.Line( geometry, material );
-    line.geometry.verticesNeedUpdate = true;
-    line.computeLineDistances () 
-    // new TWEEN.Tween(points[0])
-    // .to(
-    //   points[1],
-    //   10000
-    // ).onStart(()=>{
-    //   line.geometry.vertices.push(points[0])
-    // }).onUpdate((point22)=>{
-    //   //console.log(point)
-    //   // pointArr.push(point22)
-    //   // line.geometry.vertices= pointArr
-    //   // console.log(pointArr)
-    // }).onComplete(()=>{
-    //   console.log(line, "line.......")
-    // }).easing(TWEEN.Easing.Linear.None).start()
+    // var pointArr = []
+    // var line = new THREE.Line( geometry, material );
+    // line.geometry.verticesNeedUpdate = true;
+    // line.computeLineDistances () 
+
+    const tubeGeometry = new THREE.TubeGeometry(curve, 5, 20, 50, false);
+    var tubeMaterial2 = new THREE.MeshPhongMaterial({
+      color: 0x4488ff,
+      transparent: true,
+      opacity: 0.3,
+      side: THREE.DoubleSide,
+    });
+    console.log(tubeGeometry, "log.......");
+    
+    var line = new THREE.Mesh(tubeGeometry, tubeMaterial2);
+   // scene.add(tube2);
+
+   var index = 0
+    new TWEEN.Tween({index: 1})
+    .to(
+     {index: 50},
+      5000
+    ).onUpdate((data)=>{
+      index+=1
+      console.log(data)
+      // pointArr.push(point22)
+      // line.geometry.vertices= pointArr
+      // console.log(pointArr)
+    }).onComplete(()=>{
+
+    }).easing(TWEEN.Easing.Linear.None).start()
 
    
    return line

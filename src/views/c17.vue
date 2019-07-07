@@ -119,6 +119,7 @@ export default {
       this.createBox1();
       this.addLine2();
       this.addPoint()
+      this.addTrail()
     },
     createBox1() {
       testdata.models.forEach(item => {
@@ -448,7 +449,99 @@ export default {
     var point = new THREE.Points(geometry, material);
     point.position.set(100, 120, 0);
     scene.add(point);
-    }
+    },
+    addTrail() {
+      				var colorArray = [ new THREE.Color( 0xff0080 ), new THREE.Color( 0xffffff ), new THREE.Color( 0x8000ff ) ];
+				var positions = [];
+				var colors = [];
+				for ( var i = 0; i < 100; i ++ ) {
+					positions.push( Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5 );
+					var clr = colorArray[ Math.floor( Math.random() * colorArray.length ) ];
+					colors.push( clr.r, clr.g, clr.b );
+				}
+				var geometry = new THREE.BufferGeometry();
+				geometry.addAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
+				geometry.addAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+				var material = new THREE.PointsMaterial( { size: 4, vertexColors: THREE.VertexColors, depthTest: false, sizeAttenuation: false } );
+				var mesh = new THREE.Points( geometry, material );
+				scene.add( mesh );
+    },
+        createFlyLine(startPoint, endPoint, heightLimit, flyTime, lineStyle) {
+      var middleCurvePositionX = (startPoint.x + endPoint.x) / 2;
+      var middleCurvePositionY = heightLimit;
+      var middleCurvePositionZ = (startPoint.z + endPoint.z) / 2;
+
+      var curveData = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(startPoint.x, startPoint.y, startPoint.z),
+        new THREE.Vector3(
+          middleCurvePositionX,
+          middleCurvePositionY,
+          middleCurvePositionZ
+        ),
+        new THREE.Vector3(endPoint.x, endPoint.y, endPoint.z)
+      ]);
+      var curveModelData = curveData.getPoints(50);
+
+      var curveGeometry = new THREE.Geometry();
+      curveGeometry.vertices = curveModelData.slice(0, 1);
+      var curveMaterial = new THREE.LineBasicMaterial({
+        color: lineStyle.color,
+        linewidth: lineStyle.linewidth
+      });
+      var curve = new THREE.Line(curveGeometry, curveMaterial);
+
+      var tween = new TWEEN.Tween({ endPointIndex: 1 }).to(
+        { endPointIndex: 50 },
+        flyTime
+      );
+      console.log(tween);
+      tween.onUpdate(function tweenHandler(data) {
+        console.log(data);
+        var endPointIndex = Math.ceil(data.endPointIndex);
+
+        var curvePartialData = new THREE.CatmullRomCurve3(
+          curveModelData.slice(0, endPointIndex)
+        );
+
+        curve.geometry.vertices = curvePartialData.getPoints(50);
+        curve.geometry.verticesNeedUpdate = true;
+      });
+
+      tween.start();
+
+      return curve;
+    },
+
+    addFlyLine() {
+      var startPoint = {
+        x: 0,
+        y: 0,
+        z: 0
+      };
+
+      var endPoint = {
+        x: -80,
+        y: 0,
+        z: 50
+      };
+
+      var heightLimit = 20;
+
+      var flyTime = 8000;
+
+      var lineStyle = {
+        color: 0xcc0000,
+        linewidth: 2
+      };
+      var aCurve = this.createFlyLine(
+        startPoint,
+        endPoint,
+        heightLimit,
+        flyTime,
+        lineStyle
+      );
+      scene.add(aCurve);
+    },
   },
   mounted() {
     this.initScene();
