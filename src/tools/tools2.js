@@ -9,6 +9,8 @@ const Tools = {
   scene: null,
   selectObj: null,
   floor: 10,
+  points: [],
+  line: null,
   addCamera(camera) {
     this.camera = camera
   },
@@ -98,6 +100,25 @@ const Tools = {
         } else {
           parent.add(Tools.createEdges(Tools.selectObj.geometry))
         }
+      }
+
+      if(intersects[0].point) {
+        console.log(Tools.points,Tools.line, "tools line poings..........")
+        // if(!Tools.line) {
+        //   Tools.points.push(intersects[0].point)
+        // }else{
+        //   Tools.line.geometry.vertices.push(intersects[0].point)
+        //   Tools.line.geometry.verticesNeedUpdate = true
+        // }
+        Tools.points.push(intersects[0].point)
+        
+      }
+
+      if(Tools.points.length>1) {
+        Tools.scene.remove(Tools.line)
+        Tools.line = Tools.drawLine(Tools.points)
+        Tools.line.geometry.verticesNeedUpdate = true
+        Tools.scene.add(Tools.line)
       }
       //this.controls.enabled = true
     }
@@ -552,6 +573,46 @@ const Tools = {
     })
 
     return plantObj
+  },
+  drawLine(points) {
+    console.log(TWEEN, "tween.......")
+
+    const curve = new THREE.CatmullRomCurve3([
+      ...points
+    ]);
+    //curve.closed = true;
+
+    var pointsCount = 50;
+
+    var points = curve.getPoints(pointsCount);
+    var material = new THREE.LineBasicMaterial({
+      color: 0x0000ff
+    });
+    
+    var geometry = new THREE.Geometry();
+    geometry.setFromPoints(points);
+    // geometry.vertices.push(...points)
+    var pointArr = []
+    var line = new THREE.Line( geometry, material );
+    line.geometry.verticesNeedUpdate = true;
+    line.computeLineDistances () 
+    // new TWEEN.Tween(points[0])
+    // .to(
+    //   points[1],
+    //   10000
+    // ).onStart(()=>{
+    //   line.geometry.vertices.push(points[0])
+    // }).onUpdate((point22)=>{
+    //   //console.log(point)
+    //   // pointArr.push(point22)
+    //   // line.geometry.vertices= pointArr
+    //   // console.log(pointArr)
+    // }).onComplete(()=>{
+    //   console.log(line, "line.......")
+    // }).easing(TWEEN.Easing.Linear.None).start()
+
+   
+   return line
   }
 }
 

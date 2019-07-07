@@ -19,6 +19,8 @@ import Tools from "@/tools/tools2.js";
 
 import gModel from "@/tools/gmodel.js";
 
+const pathPng = require("../assets/path_007_18.png");
+
 let scene,
   camera,
   renderer,
@@ -42,6 +44,8 @@ var tubeGeometry;
 let labelRenderer;
 
 var controls1;
+
+let texture
 
 const TWEEN = require("@tweenjs/tween.js");
 require("threebsp");
@@ -114,6 +118,7 @@ export default {
     initObjects() {
       this.createBox1();
       this.addLine2();
+      this.addPoint()
     },
     createBox1() {
       testdata.models.forEach(item => {
@@ -186,17 +191,33 @@ export default {
       line.position.set(0, 12, 0);
       scene.add(line);
 
+      texture = new THREE.TextureLoader().load(pathPng);
+
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+
+      //texture.repeat.set(0.05, 0.05);
+
       tubeGeometry = new THREE.TubeGeometry(curve, 100, 20, 50, false);
       var tubeMaterial2 = new THREE.MeshPhongMaterial({
-        color: 0x4488ff,
+        // color: 0x4488ff,
         transparent: true,
-        opacity: 0.3,
-        side: THREE.DoubleSide
+        //opacity: 0.3,
+        side: THREE.DoubleSide,
+        map: texture
       });
       console.log(tubeGeometry, "log.......");
       var tube2 = new THREE.Mesh(tubeGeometry, tubeMaterial2);
       scene.add(tube2);
       this.getvv(curve);
+    },
+    offsetTexture() {
+      if(texture) {
+              texture.offset.x -= 0.055;
+              texture.offset.y -= 0.055;
+      texture.repeat.x = 4;
+      texture.repeat.y = 4;
+      }
     },
     getvv(curve) {
       var time = Date.now();
@@ -393,6 +414,7 @@ export default {
       requestAnimationFrame(this.render);
       this.animationSphere();
       //this.animation2();
+      this.offsetTexture()
       renderer.render(scene, camera);
 
       controls1 && controls1.update();
@@ -416,6 +438,16 @@ export default {
       document.body.appendChild(labelRenderer.domElement);
       controls1 = new OrbitControls(camera, labelRenderer.domElement);
       labelRenderer.render(scene, camera);
+    },
+    addPoint() {
+      var geometry = new THREE.Geometry();
+    geometry.vertices.push(new THREE.Vector3(100, 20, 0))
+    geometry.colors.push(new THREE.Color(0xff0000));
+
+    var material = new THREE.PointsMaterial({size: 10, vertexColors: THREE.VertexColors, opacity: 0.75, sizeAttenuation: true, transparent: true});
+    var point = new THREE.Points(geometry, material);
+    point.position.set(100, 120, 0);
+    scene.add(point);
     }
   },
   mounted() {
