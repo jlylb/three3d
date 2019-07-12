@@ -10,19 +10,33 @@ import { OrbitControls } from "three/examples/js/controls/OrbitControls";
 import testdata from "@/data/test2.js";
 import Tools from "@/tools/tools2.js";
 
-let scene,
-  camera,
-  renderer,
-  light,
-  controls,
-  floor,
-  otherCamera,
-  sphere1,
-  curve;
+import {
+  Path3D,
+  PathPointList,
+  PathGeometry,
+  PathTubeGeometry
+} from "three-path-builder";
+
+// console.log(Path3D);
+
+let scene, camera, renderer, light, controls, floor, curve;
 
 let progress = 0;
 
-let alpha = 0;
+let path3D;
+var geometry;
+var params = {
+  useTexture: true,
+  color: [88, 222, 222],
+  scrollUV: true,
+  scrollSpeed: 0.03,
+  width: 10,
+  side: "both",
+  cornerRadius: 0.2,
+  cornerSplit: 10,
+  progress: 1,
+  playSpeed: 1
+};
 
 //let points = [];
 
@@ -56,7 +70,7 @@ export default {
     initRender() {
       var axis = new THREE.AxesHelper(1200);
       // 在场景中添加坐标轴
-      scene.add(axis);
+      //scene.add(axis);
       renderer = new THREE.WebGLRenderer();
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.getElementById("container").appendChild(renderer.domElement);
@@ -87,15 +101,19 @@ export default {
             floor = Tools.createFloor(item);
             scene.add(floor);
             break;
+          case "cabinet":
+            const cabinet = Tools.createCabinet(item);
+            scene.add(cabinet);
+            break;
           default:
             break;
         }
       });
     },
     initObjects() {
-      this.addLine2();
-      // this.createBox();
-      this.addLine3();
+      //this.addLine2();
+      this.createBox();
+      //this.addAnimateLine();
     },
     addLine2() {
       var curve = new THREE.CatmullRomCurve3([
@@ -155,36 +173,55 @@ export default {
         })
       );
       scene.add(line);
-      // var box = new THREE.BoxGeometry(100, 100, 10, 1, 1, 1);
-
-      // var boxMesh = new THREE.Mesh(
-      //   box,
-      //   new THREE.MeshBasicMaterial({ color: 0x00ff00 })
-      // );
-      // scene.add(boxMesh);
     },
-    addLine3() {
-      const v1 = new THREE.Vector3();
-      const v2 = new THREE.Vector3(100, 100, 100);
-      let points = [];
-      if (alpha > 1) return;
+    addAnimateLine() {
+      path3D = new Path3D();
+      var fixRadius = 0.5;
+      var height = 0.1;
 
-      while (alpha < 1) {
-        let v3 = v1.lerp(v2, alpha);
-        alpha += 0.01;
-        points.push(v3.x, v3.y, v3.z);
+      geometry = new PathGeometry();
+      var material = new THREE.MeshBasicMaterial({
+        color: 0x00ff00,
+        depthWrite: true,
+        transparent: true,
+        opacity: 1,
+        side: THREE.DoubleSide
+      });
+      var line = new THREE.Mesh(geometry, material);
+      line.drawMode = THREE.TriangleStripDrawMode;
+      scene.add(line);
+
+      const points1 = new THREE.Vector3();
+      const points2 = new THREE.Vector3(100, 100, 100);
+      path3D.start();
+      path3D.update(points1);
+      path3D.confirm();
+      path3D.update(points2);
+      path3D.confirm();
+      path3D.stop();
+      geometry.update(path3D.getPathPointList(), {
+        width: params.width,
+        side: params.side,
+        arrow: true
+      });
+    },
+    lineAnimate() {
+      var pathPointList = path3D.getPathPointList();
+      var distance = pathPointList.distance();
+
+      if (distance > 0) {
+        params.progress += params.playSpeed / distance;
+        if (params.progress >= 1) {
+          params.progress = 0;
+        }
       }
-
-      var geometry = new THREE.BufferGeometry();
-      geometry.addAttribute(
-        "position",
-        new THREE.Float32BufferAttribute(points, 3)
-      );
-      var material = new THREE.MeshBasicMaterial({ color: 0x000000 });
-      // var mesh = new THREE.Mesh(geometry, material);
-      var mesh = new THREE.Line(geometry, material);
-      scene.add(mesh);
-      console.log(points, "vector three..........");
+      console.log(pathPointList);
+      geometry.update(pathPointList, {
+        width: params.width,
+        side: params.side,
+        progress: params.progress,
+        arrow: true
+      });
     },
     render() {
       if (TWEEN != null && typeof TWEEN != "undefined") {
@@ -192,6 +229,7 @@ export default {
       }
       requestAnimationFrame(this.render);
       renderer.render(scene, camera);
+      // this.lineAnimate();
       // this.addLine3();
     }
   },

@@ -4,6 +4,10 @@ const floorJpg = require('../assets/floor.jpg')
 const glassPng = require('../assets/glass.png')
 
 const plantJpg = require('../assets/plant.png')
+
+const frontJpg = require('../assets/rack_front_door.jpg')
+const backJpg = require('../assets/rack_door_back.jpg')
+
 export const room = {
   length: 300,
   width: 240,
@@ -26,7 +30,63 @@ const getChair = (length, boardWidth, distance, direction = 'left') => {
   }
   return len
 }
-
+/**
+ *
+ * @param Object point 点坐标
+ * @param Number length 长
+ * @param Number Width 宽
+ * @param Number height 高
+ * @param Number distance 距离
+ * @param Number thick 厚度
+ */
+const xyzPosition = (
+  point,
+  distance = 10,
+  length = 20,
+  Width = 20,
+  height = 100,
+  thick = 2
+) => {
+  const { x, y, z } = point
+  const pointArr = [
+    // 左侧
+    [
+      [x + length, height / 2 + distance / 2, z],
+      [x, height / 2 + distance / 2, z]
+    ],
+    //右侧
+    [
+      [x + length, height / 2 + distance / 2, z + Width],
+      [x, height / 2 + distance / 2, z + Width]
+    ],
+    //后侧
+    [
+      [
+        x + length - thick / 2,
+        height / 2 + distance / 2,
+        z + length - thick / 2
+      ],
+      [x + length - thick / 2, height / 2 + distance / 2, z + thick / 2]
+    ],
+    //上侧
+    [
+      [
+        x + length / 2,
+        height + distance / 2 - thick / 2,
+        z + length - thick / 2
+      ],
+      [x + length / 2, height + distance / 2 - thick / 2, z + thick / 2]
+    ],
+    //下侧
+    [
+      [x + length / 2, distance / 2 + thick / 2, z + length - thick / 2],
+      [x + length / 2, distance / 2 + thick / 2, z + thick / 2]
+    ]
+  ]
+  return pointArr
+}
+const cabinets = xyzPosition({ x: 0, y: 10, z: -340 })
+console.log(cabinets)
 export default {
   //房间设置
   room: {
@@ -486,6 +546,69 @@ export default {
       width: 180, // x y z
       offset: 5,
       style: plantJpg
+    },
+    {
+      name: 'cabinet_1',
+      modelType: 'cabinet',
+      start: cabinets[0][0],
+      end: cabinets[0][1],
+      height: 100,
+      thick: 2,
+      enabledAxes: true,
+      AxesLen: 1000,
+      style: {
+        skin: {
+          color: 0xff0000,
+          up: { path: backJpg },
+          down: { path: backJpg },
+          before: {
+            path: backJpg
+          },
+          after: {
+            path: backJpg
+          },
+          left: { path: backJpg },
+          right: { path: backJpg }
+        }
+      },
+      childrens: [
+        //后
+        {
+          modelType: 'hole',
+          start: cabinets[2][0],
+          end: cabinets[2][1],
+          height: 100,
+          thick: 2,
+          op: '+'
+        },
+        //右
+        {
+          modelType: 'hole',
+          start: cabinets[1][0],
+          end: cabinets[1][1],
+          height: 100,
+          thick: 2,
+          op: '+'
+        },
+        //上
+        {
+          modelType: 'hole',
+          start: cabinets[3][0],
+          end: cabinets[3][1],
+          height: 2,
+          thick: 20,
+          op: '+'
+        },
+        //下
+        {
+          modelType: 'hole',
+          start: cabinets[4][0],
+          end: cabinets[4][1],
+          height: 2,
+          thick: 20,
+          op: '+'
+        }
+      ]
     }
   ]
 }

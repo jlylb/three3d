@@ -102,24 +102,23 @@ const Tools = {
         }
       }
 
-      if(intersects[0].point) {
-        console.log(Tools.points,Tools.line, "tools line poings..........")
+      if (intersects[0].point) {
+        console.log(Tools.points, Tools.line, 'tools line poings..........')
         // if(!Tools.line) {
         //   Tools.points.push(intersects[0].point)
         // }else{
         //   Tools.line.geometry.vertices.push(intersects[0].point)
         //   Tools.line.geometry.verticesNeedUpdate = true
         // }
-        Tools.points.push(intersects[0].point)
-        
+        //Tools.points.push(intersects[0].point)
       }
 
-      if(Tools.points.length>1) {
-        Tools.scene.remove(Tools.line)
-        Tools.line = Tools.drawLine(Tools.points)
-        Tools.line.geometry.verticesNeedUpdate = true
-        Tools.scene.add(Tools.line)
-      }
+      // if(Tools.points.length>1) {
+      //   Tools.scene.remove(Tools.line)
+      //   Tools.line = Tools.drawLine(Tools.points)
+      //   Tools.line.geometry.verticesNeedUpdate = true
+      //   Tools.scene.add(Tools.line)
+      // }
       //this.controls.enabled = true
     }
   },
@@ -132,12 +131,16 @@ const Tools = {
   addObject(params) {
     const { rotation, childrens } = params
 
-    let result = this.createBox(params)
+    let ss = this.createBox(params)
+    let result = ss
 
     //模型原坐标
-    let pos = result.position
+    let pos = ss.position
 
     const group = new THREE.Group()
+    group.add(result)
+    group.position.copy(pos)
+    group.rotation.copy(result.rotation)
 
     if (childrens && childrens.length > 0) {
       childrens.forEach(item => {
@@ -153,6 +156,7 @@ const Tools = {
 
     group.position.copy(pos)
     group.rotation.copy(result.rotation)
+    // group.position.set(0, 0, 0)
     result.position.set(0, 0, 0)
     result.rotation.set(0, 0, 0)
 
@@ -185,7 +189,7 @@ const Tools = {
       group.add(line)
     }
 
-    group.add(result)
+    //group.add(result)
 
     return group
   },
@@ -361,8 +365,13 @@ const Tools = {
 
     switch (op) {
       case '+':
-        result = sResult.union(tResult)
-        break
+        //result = sResult.union(tResult)
+        // tObj.position.set(sObj.position.x, 0, 0)
+        tObj.updateMatrix()
+        sObj.geometry.merge(tObj.geometry, tObj.matrix)
+
+        return sObj
+      // break
       case '&':
         result = sResult.intersect(tResult)
         break
@@ -426,6 +435,7 @@ const Tools = {
   //打孔
   createHoles(box, hole) {
     let result = this.addHole(box, hole)
+    // result.position.set(0, 0, 0)
     return result
   },
   createDoor(params) {
@@ -575,11 +585,9 @@ const Tools = {
     return plantObj
   },
   drawLine(points) {
-    console.log(TWEEN, "tween.......")
+    console.log(TWEEN, 'tween.......')
 
-    const curve = new THREE.CatmullRomCurve3([
-      ...points
-    ]);
+    const curve = new THREE.CatmullRomCurve3([...points])
     //curve.closed = true;
 
     // var pointsCount = 50;
@@ -588,44 +596,48 @@ const Tools = {
     // var material = new THREE.LineBasicMaterial({
     //   color: 0x0000ff
     // });
-    
+
     // var geometry = new THREE.Geometry();
     // geometry.setFromPoints(points);
     // geometry.vertices.push(...points)
     // var pointArr = []
     // var line = new THREE.Line( geometry, material );
     // line.geometry.verticesNeedUpdate = true;
-    // line.computeLineDistances () 
+    // line.computeLineDistances ()
 
-    const tubeGeometry = new THREE.TubeGeometry(curve, 5, 20, 50, false);
+    const tubeGeometry = new THREE.TubeGeometry(curve, 5, 20, 50, false)
     var tubeMaterial2 = new THREE.MeshPhongMaterial({
       color: 0x4488ff,
       transparent: true,
       opacity: 0.3,
-      side: THREE.DoubleSide,
-    });
-    console.log(tubeGeometry, "log.......");
-    
-    var line = new THREE.Mesh(tubeGeometry, tubeMaterial2);
-   // scene.add(tube2);
+      side: THREE.DoubleSide
+    })
+    console.log(tubeGeometry, 'log.......')
 
-   var index = 0
-    new TWEEN.Tween({index: 1})
-    .to(
-     {index: 50},
-      5000
-    ).onUpdate((data)=>{
-      index+=1
-      console.log(data)
-      // pointArr.push(point22)
-      // line.geometry.vertices= pointArr
-      // console.log(pointArr)
-    }).onComplete(()=>{
+    var line = new THREE.Mesh(tubeGeometry, tubeMaterial2)
+    // scene.add(tube2);
 
-    }).easing(TWEEN.Easing.Linear.None).start()
+    var index = 0
+    new TWEEN.Tween({ index: 1 })
+      .to({ index: 50 }, 5000)
+      .onUpdate(data => {
+        index += 1
+        console.log(data)
+        // pointArr.push(point22)
+        // line.geometry.vertices= pointArr
+        // console.log(pointArr)
+      })
+      .onComplete(() => {})
+      .easing(TWEEN.Easing.Linear.None)
+      .start()
 
-   
-   return line
+    return line
+  },
+  addCabinet(params) {
+    return this.addObject(params)
+  },
+  createCabinet(params) {
+    return this.addCabinet(params)
   }
 }
 
