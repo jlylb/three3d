@@ -6449,7 +6449,6 @@ three-orbit-controls@^82.1.0:
 three-path-builder@^1.0.9:
   version "1.0.9"
   resolved "https://registry.npm.taobao.org/three-path-builder/download/three-path-builder-1.0.9.tgz#90392ba621aa4d2ee63ccccc0392649a54b91eb5"
-  integrity sha1-kDkrpiGqTS7mPMzMA5JkmlS5HrU=
 
 three@^0.104.0:
   version "0.104.0"
