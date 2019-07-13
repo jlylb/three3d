@@ -46,20 +46,56 @@ const Tools = {
     }
     obj.doorState = doorstate == 'close' ? 'open' : 'close'
 
+    let left = 3 / 5
+    let right = -3 / 5
+    let animationType = 'elastic'
+    if (tempobj.parent) {
+      const { door } = tempobj.parent.userData || {}
+      left = door.left
+      right = door.right
+      animationType = door.animationType
+    }
+    let animation
+    if (animationType == 'elastic') {
+      animation = TWEEN.Easing.Elastic.Out
+    } else {
+      animation = TWEEN.Easing.Quadratic.Out
+    }
     new TWEEN.Tween(tempobj.rotation)
       .to(
         {
           y:
             doorstate == 'close'
-              ? (doorDirection == 'left' ? 3 / 5 : -3 / 5) * Math.PI
+              ? (doorDirection == 'left' ? left : right) * Math.PI
               : 0 * (3 / 5) * Math.PI
         },
         10000
       )
-      .easing(TWEEN.Easing.Elastic.Out)
+      .easing(animation)
       .start()
   },
-
+  openServer(obj) {
+    var cardstate = 'in'
+    if (obj.cardstate != null && typeof obj.cardstate != 'undefined') {
+      cardstate = obj.cardstate
+    } else {
+      obj.cardstate = 'out'
+    }
+    console.log(cardstate, 'server card.....')
+    new TWEEN.Tween(obj.position)
+      .to(
+        {
+          x: cardstate == 'in' ? obj.position.x - 9 : obj.position.x + 9
+        },
+        1000
+      )
+      .easing(TWEEN.Easing.Quadratic.Out)
+      .start()
+      .onStart(function() {
+        console.log(obj.position)
+        obj.cardstate = cardstate == 'in' ? 'out' : 'in'
+      })
+  },
   onDocumentMouseDown(event) {
     //raycaster.setFromCamera(mouse, camera);
     var mouse = {}
@@ -88,8 +124,12 @@ const Tools = {
       if (Tools.selectObj.name.includes('rightdoor')) {
         Tools.openDoor(Tools.selectObj, 'right')
       }
-      console.log(Tools.selectObj.isMesh, 'click.......')
-
+      if (Tools.selectObj.name.includes('cabinets_door')) {
+        Tools.openDoor(Tools.selectObj, 'right')
+      }
+      if (Tools.selectObj.name.includes('server')) {
+        Tools.openServer(Tools.selectObj)
+      }
       const parent = Tools.selectObj.parent
 
       if (Tools.selectObj.isMesh && parent.type === 'Group') {
@@ -98,27 +138,16 @@ const Tools = {
         if (line.type === 'LineSegments') {
           parent.remove(line)
         } else {
-          parent.add(Tools.createEdges(Tools.selectObj.geometry))
+          let line = Tools.createEdges(Tools.selectObj.geometry)
+          line.position.copy(Tools.selectObj.position)
+          parent.add(line)
         }
       }
 
       if (intersects[0].point) {
         console.log(Tools.points, Tools.line, 'tools line poings..........')
-        // if(!Tools.line) {
-        //   Tools.points.push(intersects[0].point)
-        // }else{
-        //   Tools.line.geometry.vertices.push(intersects[0].point)
-        //   Tools.line.geometry.verticesNeedUpdate = true
-        // }
-        //Tools.points.push(intersects[0].point)
       }
 
-      // if(Tools.points.length>1) {
-      //   Tools.scene.remove(Tools.line)
-      //   Tools.line = Tools.drawLine(Tools.points)
-      //   Tools.line.geometry.verticesNeedUpdate = true
-      //   Tools.scene.add(Tools.line)
-      // }
       //this.controls.enabled = true
     }
   },
@@ -131,16 +160,18 @@ const Tools = {
   addObject(params) {
     const { rotation, childrens } = params
 
-    let ss = this.createBox(params)
-    let result = ss
+    let result = this.createBox(params)
 
     //模型原坐标
-    let pos = ss.position
+    let pos = result.position
 
     const group = new THREE.Group()
-    group.add(result)
-    group.position.copy(pos)
-    group.rotation.copy(result.rotation)
+
+    if (typeof params.userData !== 'undefined') {
+      console.log(params.userData, 'user data...........')
+      group.userData = params.userData
+      //group.userData = Object.assign(group.userData, params.userData)
+    }
 
     if (childrens && childrens.length > 0) {
       childrens.forEach(item => {
@@ -156,12 +187,12 @@ const Tools = {
 
     group.position.copy(pos)
     group.rotation.copy(result.rotation)
-    // group.position.set(0, 0, 0)
     result.position.set(0, 0, 0)
     result.rotation.set(0, 0, 0)
 
     if (params.name) {
       result.name = params.name
+      group.name = `${params.name}_group`
     }
 
     if (rotation) {
@@ -189,7 +220,7 @@ const Tools = {
       group.add(line)
     }
 
-    //group.add(result)
+    group.add(result)
 
     return group
   },
@@ -271,7 +302,9 @@ const Tools = {
     if (params.position) {
       result.position.set(...params.position)
     }
-
+    if (params.name) {
+      result.name = params.name
+    }
     if (params.rotation) {
       result.rotation.set(...params.rotation)
     }
@@ -352,6 +385,7 @@ const Tools = {
       edges,
       new THREE.LineBasicMaterial(materials || { color: 0x00ff00 })
     )
+    console.log(line.position, 'line.................')
     return line
   },
   createAxes(len = 50) {
@@ -365,8 +399,7 @@ const Tools = {
 
     switch (op) {
       case '+':
-        //result = sResult.union(tResult)
-        // tObj.position.set(sObj.position.x, 0, 0)
+        // result = sResult.union(tResult)
         tObj.updateMatrix()
         sObj.geometry.merge(tObj.geometry, tObj.matrix)
 
@@ -425,7 +458,6 @@ const Tools = {
 
   addHole(box, hole) {
     const holeCube = this.createBox(hole)
-
     holeCube.position.set(...hole.position)
 
     const resultBSP = this.merge(hole.op, box, holeCube)

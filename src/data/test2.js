@@ -7,6 +7,10 @@ const plantJpg = require('../assets/plant.png')
 
 const frontJpg = require('../assets/rack_front_door.jpg')
 const backJpg = require('../assets/rack_door_back.jpg')
+const rackJpg = require('../assets/rack.jpg')
+
+const serverJpg = require('../assets/server2.jpg')
+const insideJpg = require('../assets/rack_inside.jpg')
 
 export const room = {
   length: 300,
@@ -85,8 +89,50 @@ const xyzPosition = (
   ]
   return pointArr
 }
-const cabinets = xyzPosition({ x: 0, y: 10, z: -340 })
-console.log(cabinets)
+const cabinets1 = xyzPosition({ x: 0, y: 10, z: -340 })
+
+const xyzMerge = (
+  point,
+  distance = 10,
+  length = 20,
+  Width = 20,
+  height = 100,
+  thick = 2
+) => {
+  const { x, y, z } = point
+  const pointArr = [
+    // 左侧
+    [
+      [x - length / 2, height / 2 + distance / 2 + thick / 2, z + 0],
+      [x + length / 2, height / 2 + distance / 2 + thick / 2, z + 0]
+    ],
+    //右侧
+    [[-length / 2, 0, Width], [length / 2, 0, Width]],
+    //后侧
+    [
+      [length / 2 - thick / 2, 0, length - thick / 2],
+      [length / 2 - thick / 2, 0, thick / 2]
+    ],
+    //上侧
+    [
+      [0, height / 2 - thick / 2, length - thick / 2],
+      [0, height / 2 - thick / 2, thick / 2]
+    ],
+    //下侧
+    [
+      [0, -height / 2 + thick / 2, length - thick / 2],
+      [0, -height / 2 + thick / 2, thick / 2]
+    ],
+    //后侧
+    [
+      [-length / 2 + thick / 2, 0, length - thick / 2],
+      [-length / 2 + thick / 2, 0, thick / 2]
+    ]
+  ]
+  return pointArr
+}
+const cabinets = xyzMerge({ x: 0, y: 10, z: -340 })
+console.log(cabinets1, cabinets)
 export default {
   //房间设置
   room: {
@@ -556,6 +602,7 @@ export default {
       thick: 2,
       enabledAxes: true,
       AxesLen: 1000,
+
       style: {
         skin: {
           color: 0xff0000,
@@ -607,6 +654,72 @@ export default {
           height: 2,
           thick: 20,
           op: '+'
+        },
+        {
+          modelType: 'door',
+          start: cabinets[5][0],
+          end: cabinets[5][1],
+          height: 96,
+          thick: 2,
+          name: 'cabinets_door',
+          style: {
+            transparent: true,
+            color: 0x00ff00,
+            opacity: 0.2,
+            skin: {
+              left: {
+                path: rackJpg //左
+              },
+              right: {
+                path: frontJpg //右
+              },
+              up: { path: backJpg }, //上
+              down: { path: backJpg }, //下
+
+              after: { path: backJpg }, //后
+              before: { path: backJpg } //前
+            }
+          },
+          userData: {
+            door: {
+              left: -3 / 5,
+              right: 3 / 5,
+              animationType: 'none'
+            }
+          }
+        },
+        {
+          modelType: 'server',
+          name: 'server_1',
+          start: [0, -50 + 1 + 5, 18 - 1],
+          end: [0, -50 + 1 + 5, 1],
+          height: 5,
+          thick: 18,
+          style: {
+            transparent: true,
+            color: 0x00ff00,
+            opacity: 0.2,
+            skin: {
+              left: {
+                path: insideJpg
+              },
+              right: {
+                path: serverJpg
+              },
+              up: {
+                path: insideJpg
+              },
+              down: {
+                path: insideJpg
+              },
+              after: {
+                path: insideJpg
+              },
+              before: {
+                path: insideJpg
+              }
+            }
+          }
         }
       ]
     }

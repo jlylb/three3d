@@ -113,6 +113,7 @@ export default {
     initObjects() {
       //this.addLine2();
       this.createBox();
+      this.addMerge();
       //this.addAnimateLine();
     },
     addLine2() {
@@ -231,6 +232,61 @@ export default {
       renderer.render(scene, camera);
       // this.lineAnimate();
       // this.addLine3();
+    },
+    addMerge() {
+      const box1 = {
+        name: "side_board1",
+        box: [100, 20, 30],
+        position: [0, 15, 0],
+        style: {
+          skin: {
+            left: {
+              color: 0xff0000
+            },
+            right: {
+              color: 0xff0000
+            },
+            up: {
+              color: 0xff0000
+            },
+            down: {
+              color: 0xff0000
+            }
+          }
+        }
+      };
+      const box2 = {
+        name: "side_board2",
+        box: [100, 200, 10],
+        position: [100, 85, 0],
+        style: {
+          skin: {
+            left: {
+              color: 0xff0000
+            },
+            right: {
+              color: 0xff0000
+            },
+            up: {
+              color: 0xff0000
+            },
+            down: {
+              color: 0xff0000
+            }
+          }
+        }
+      };
+      const gp = new THREE.Group();
+
+      const mesh1 = Tools.createBox(box1);
+      const mesh2 = Tools.createBox(box2);
+      mesh2.updateMatrix();
+      mesh1.geometry.merge(mesh2.geometry, mesh2.matrix);
+
+      gp.add(mesh1);
+      //gp.position.copy(mesh1.position);
+      //scene.add(gp);
+      //scene.add(mesh2);
     }
   },
   mounted() {
