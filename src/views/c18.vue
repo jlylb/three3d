@@ -89,7 +89,10 @@ export default {
       scene.add(light);
       var light2 = new THREE.PointLight(0x555555);
 
-      light2.position.set(0, 0, 0);
+      light2.position.set(0, 350, 0);
+
+            light2.shadow.camera.near = 1;
+      light2.shadow.camera.far = 5000;
 
       light2.castShadow = true; //表示这个光是可以产生阴影的
       scene.add(light2);
@@ -97,13 +100,19 @@ export default {
     createBox() {
       testdata.models.forEach(item => {
         switch (item.modelType) {
+          case "room":
+            scene.add(Tools.createWall(item));
+            break;
           case "floor":
             floor = Tools.createFloor(item);
             scene.add(floor);
             break;
           case "cabinet":
             const cabinet = Tools.createCabinet(item);
-            scene.add(cabinet);
+            cabinet.forEach((item)=>{
+              scene.add(item);
+            })
+           
             break;
           default:
             break;

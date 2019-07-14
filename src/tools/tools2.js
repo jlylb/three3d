@@ -49,7 +49,7 @@ const Tools = {
     let left = 3 / 5
     let right = -3 / 5
     let animationType = 'elastic'
-    if (tempobj.parent) {
+    if (tempobj.parent && Object.keys(tempobj.parent.userData).length>0) {
       const { door } = tempobj.parent.userData || {}
       left = door.left
       right = door.right
@@ -81,19 +81,49 @@ const Tools = {
     } else {
       obj.cardstate = 'out'
     }
+
+    //obj.position.set(-18,0,0)
+    console.log(obj.position, "sss..........")
+    // let x = Math.floor(obj.position.x)
+
+    const {x, y, z} = obj.position
+
+    const min =  new THREE.Vector3(-34, y, z)
+
+    const max = new THREE.Vector3(0,y,z)
+
+    const max1 = new THREE.Vector3(34,y,z)
+
+    const me = new THREE.Vector3().copy(obj.position)
+
+
+    // obj.position.x - 9 :  
+    // obj.position.x  + 9
+
+    //obj.position.clamp(min, max)
+    console.log(obj.position, me, "sss..........dddd")
+    // return 
+ 
     console.log(cardstate, 'server card.....')
     new TWEEN.Tween(obj.position)
       .to(
         {
-          x: cardstate == 'in' ? obj.position.x - 9 : obj.position.x + 9
+          x: cardstate == 'in' ? 
+   obj.position.x - 34 :  
+    obj.position.x  + 34
         },
         1000
       )
       .easing(TWEEN.Easing.Quadratic.Out)
       .start()
-      .onStart(function() {
-        console.log(obj.position)
+      .onUpdate(function() {
+        //obj.position.x = cardstate == 'in' ? 0 : -9
+        obj.position.clamp(min, max)
+      })
+      .onComplete(function() {
+        console.log(cardstate, 'before......')
         obj.cardstate = cardstate == 'in' ? 'out' : 'in'
+        console.log(obj.position, cardstate, 'after......')
       })
   },
   onDocumentMouseDown(event) {
@@ -202,10 +232,12 @@ const Tools = {
     //开启阴影
     if (params.enabledShadow) {
       result.castShadow = true
+      //group.castShadow = true
     }
     //接收阴影
     if (params.enabledReceive) {
       result.receiveShadow = true
+     // group.receiveShadow = true
     }
 
     //开启坐标
@@ -307,6 +339,14 @@ const Tools = {
     }
     if (params.rotation) {
       result.rotation.set(...params.rotation)
+    }
+    //开启阴影
+    if (params.enabledShadow) {
+      result.castShadow = true
+    }
+    //接收阴影
+    if (params.enabledReceive) {
+      result.receiveShadow = true
     }
     return result
   },
@@ -428,6 +468,9 @@ const Tools = {
     toResult.geometry.uvsNeedUpdate = true
     toResult.geometry.colorsNeedUpdate = true
     toResult.geometry.elementsNeedUpdate = true
+
+    toResult.castShadow = true
+    toResult.receiveShadow = true
 
     return toResult
   },
@@ -669,7 +712,28 @@ const Tools = {
     return this.addObject(params)
   },
   createCabinet(params) {
-    return this.addCabinet(params)
+    const results = []
+    const cabinets = this.addCabinet(params)
+    results.push(cabinets)
+    const {x, y, z} = cabinets.position
+    const rows = 5, zOffset = 50, width = 70, xOffset = 50, columns = 6
+    for(let j=1; j<=rows; j++) {
+      let nextX =  x+(j-1)*xOffset+60*(j-1)
+      let startZ = j==1?2:1;
+      for(let i=startZ; i<=columns; i++) {
+        let nextZ =  z+(i-1)*zOffset+width*(i-1)
+        let cloneObj = cabinets.clone()
+        cloneObj.position.set(nextX, y, nextZ)
+        results.push(cloneObj)
+      }
+    }
+    return results
+  },
+  addServer(params) {
+    return this.addObject(params)
+  },
+  createServer(params) {
+    return this.addServer(params)
   }
 }
 

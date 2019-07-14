@@ -94,24 +94,24 @@ const cabinets1 = xyzPosition({ x: 0, y: 10, z: -340 })
 const xyzMerge = (
   point,
   distance = 10,
-  length = 20,
-  Width = 20,
-  height = 100,
+  length = 60,
+  Width = 70,
+  height = 200,
   thick = 2
 ) => {
   const { x, y, z } = point
   const pointArr = [
     // 左侧
     [
-      [x - length / 2, height / 2 + distance / 2 + thick / 2, z + 0],
-      [x + length / 2, height / 2 + distance / 2 + thick / 2, z + 0]
+      [x - Width / 2, height / 2 + distance / 2 + thick / 2, z + 0],
+      [x + Width / 2, height / 2 + distance / 2 + thick / 2, z + 0]
     ],
     //右侧
-    [[-length / 2, 0, Width], [length / 2, 0, Width]],
+    [[-Width / 2, 0, length], [Width / 2, 0, length]],
     //后侧
     [
-      [length / 2 - thick / 2, 0, length - thick / 2],
-      [length / 2 - thick / 2, 0, thick / 2]
+      [Width / 2 - thick / 2, 0, length - thick / 2],
+      [Width / 2 - thick / 2, 0, thick / 2]
     ],
     //上侧
     [
@@ -125,14 +125,22 @@ const xyzMerge = (
     ],
     //后侧
     [
-      [-length / 2 + thick / 2, 0, length - thick / 2],
-      [-length / 2 + thick / 2, 0, thick / 2]
+      [-Width / 2 + thick / 2, 0, length - thick / 2],
+      [-Width / 2 + thick / 2, 0, thick / 2]
     ]
   ]
   return pointArr
 }
-const cabinets = xyzMerge({ x: 0, y: 10, z: -340 })
+const cabinets = xyzMerge({ x: -100, y: 10, z: -320 })
 console.log(cabinets1, cabinets)
+
+const xyzServer = (i, cHeight=200, height=10, thick=68, length = 58, bottom=2 ) => {
+  let boxHeight = -cHeight/2 + bottom + i*height/2+(i-1)*10;
+  return [
+    [0, boxHeight, length - 1],
+    [0, boxHeight, 1],
+  ]
+}
 export default {
   //房间设置
   room: {
@@ -151,6 +159,7 @@ export default {
       rotation: [0, 0, 0],
       position: [0, 0, 0],
       visible: true,
+      enabledReceive: true,
       style: {
         color: 0x8ac9e2,
         skin: {
@@ -312,10 +321,10 @@ export default {
             color: 0x8ac9e2,
             skin: {
               left: {
-                color: 0xdddddd
+                color: 0xb0cee0
               },
               right: {
-                color: 0xdddddd
+                color: 0xb0cee0
               },
               up: {
                 color: 0xdddddd
@@ -324,7 +333,39 @@ export default {
                 color: 0xb0cee0
               },
               after: {
-                color: 0xdeeeee
+                color: 0xb0cee0
+              },
+              before: {
+                color: 0xb0cee0
+              }
+            }
+          },
+          childrens:[]
+        },
+        {
+          name: 'wall4',
+          rotation: [0, 0, 0],
+          position: [0, 0, 0],
+          start: [-490, 120, -350],
+          end: [-490, 120, 450],
+          visible: true,
+          style: {
+            color: 0x8ac9e2,
+            skin: {
+              left: {
+                color: 0xb0cee0
+              },
+              right: {
+                color: 0xb0cee0
+              },
+              up: {
+                color: 0xdddddd
+              },
+              down: {
+                color: 0xb0cee0
+              },
+              after: {
+                color: 0xb0cee0
               },
               before: {
                 color: 0xb0cee0
@@ -338,8 +379,8 @@ export default {
               op: '-',
               rotation: [0, 0, 0],
               visible: true,
-              start: [490, 110, -60],
-              end: [490, 110, 160],
+              start: [-490, 110, -60],
+              end: [-490, 110, 160],
               height: 210,
               style: {
                 color: 0x8ac9e2,
@@ -376,6 +417,7 @@ export default {
               direction: 'left',
               enabledAxes: true,
               enabledLine: true,
+              enabledShadow: true,
               style: {
                 skin: {
                   left: {
@@ -398,6 +440,13 @@ export default {
                   before: {
                     color: 0xb0cee0
                   }
+                }
+              },
+              userData: {
+                door: {
+                  left: -3 / 5,
+                  right: 3 / 5,
+                  animationType: 'elastic'
                 }
               }
             },
@@ -411,6 +460,7 @@ export default {
               name: 'rightdoor',
               direction: 'right',
               enabledAxes: true,
+              enabledShadow: true,
               style: {
                 skin: {
                   left: {
@@ -434,41 +484,16 @@ export default {
                     color: 0xb0cee0
                   }
                 }
+              },
+              userData: {
+                door: {
+                  left: -3 / 5,
+                  right: 3 / 5,
+                  animationType: 'elastic'
+                }
               }
             }
           ]
-        },
-        {
-          name: 'wall4',
-          rotation: [0, 0, 0],
-          position: [0, 0, 0],
-          start: [-490, 120, -350],
-          end: [-490, 120, 450],
-          visible: true,
-          style: {
-            color: 0x8ac9e2,
-            skin: {
-              left: {
-                color: 0xb0cee0
-              },
-              right: {
-                color: 0xb0cee0
-              },
-              up: {
-                color: 0xdddddd
-              },
-              down: {
-                color: 0xb0cee0
-              },
-              after: {
-                color: 0xb0cee0
-              },
-              before: {
-                color: 0xb0cee0
-              }
-            }
-          },
-          childrens: []
         }
       ]
     },
@@ -598,10 +623,11 @@ export default {
       modelType: 'cabinet',
       start: cabinets[0][0],
       end: cabinets[0][1],
-      height: 100,
+      height: 200,
       thick: 2,
-      enabledAxes: true,
-      AxesLen: 1000,
+      // enabledShadow: true,
+      // enabledAxes: true,
+      // AxesLen: 1000,
 
       style: {
         skin: {
@@ -624,7 +650,7 @@ export default {
           modelType: 'hole',
           start: cabinets[2][0],
           end: cabinets[2][1],
-          height: 100,
+          height: 200,
           thick: 2,
           op: '+'
         },
@@ -633,7 +659,7 @@ export default {
           modelType: 'hole',
           start: cabinets[1][0],
           end: cabinets[1][1],
-          height: 100,
+          height: 200,
           thick: 2,
           op: '+'
         },
@@ -643,7 +669,7 @@ export default {
           start: cabinets[3][0],
           end: cabinets[3][1],
           height: 2,
-          thick: 20,
+          thick: 68,
           op: '+'
         },
         //下
@@ -652,14 +678,14 @@ export default {
           start: cabinets[4][0],
           end: cabinets[4][1],
           height: 2,
-          thick: 20,
+          thick: 68,
           op: '+'
         },
         {
           modelType: 'door',
           start: cabinets[5][0],
           end: cabinets[5][1],
-          height: 96,
+          height: 196,
           thick: 2,
           name: 'cabinets_door',
           style: {
@@ -691,10 +717,76 @@ export default {
         {
           modelType: 'server',
           name: 'server_1',
-          start: [0, -50 + 1 + 5, 18 - 1],
-          end: [0, -50 + 1 + 5, 1],
-          height: 5,
-          thick: 18,
+          start: xyzServer(6)[0],
+          end: xyzServer(6)[1],
+          height: 10,
+          thick: 68,
+          style: {
+            transparent: true,
+            color: 0x00ff00,
+            opacity: 0.2,
+            skin: {
+              left: {
+                path: insideJpg
+              },
+              right: {
+                path: serverJpg
+              },
+              up: {
+                path: insideJpg
+              },
+              down: {
+                path: insideJpg
+              },
+              after: {
+                path: insideJpg
+              },
+              before: {
+                path: insideJpg
+              }
+            }
+          }
+        },
+        {
+          modelType: 'server',
+          name: 'server_1',
+          start: xyzServer(5)[0],
+          end: xyzServer(5)[1],
+          height: 10,
+          thick: 68,
+          style: {
+            transparent: true,
+            color: 0x00ff00,
+            opacity: 0.2,
+            skin: {
+              left: {
+                path: insideJpg
+              },
+              right: {
+                path: serverJpg
+              },
+              up: {
+                path: insideJpg
+              },
+              down: {
+                path: insideJpg
+              },
+              after: {
+                path: insideJpg
+              },
+              before: {
+                path: insideJpg
+              }
+            }
+          }
+        },
+        {
+          modelType: 'server',
+          name: 'server_1',
+          start: xyzServer(10)[0],
+          end: xyzServer(10)[1],
+          height: 10,
+          thick: 68,
           style: {
             transparent: true,
             color: 0x00ff00,
