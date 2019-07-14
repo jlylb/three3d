@@ -220,6 +220,10 @@ const Tools = {
     result.position.set(0, 0, 0)
     result.rotation.set(0, 0, 0)
 
+    if(params.groupPosition) {
+      group.position.set(...params.groupPosition)
+    }
+
     if (params.name) {
       result.name = params.name
       group.name = `${params.name}_group`
@@ -244,6 +248,8 @@ const Tools = {
     if (params.enabledAxes) {
       group.add(this.createAxes(params.AxesLen || null))
     }
+
+
 
     //开启边框
     if (params.enabledLine) {
@@ -323,7 +329,7 @@ const Tools = {
       params = this.getBoxParams(params)
     }
 
-    const { box, style, materialName = 'lambert' } = params
+    const { box=[], style, materialName = 'lambert' } = params
 
     const geometry = new THREE.BoxGeometry(...box)
 
@@ -348,6 +354,25 @@ const Tools = {
     if (params.enabledReceive) {
       result.receiveShadow = true
     }
+    if (params.animation) {
+      result.geometry.computeBoundingBox()
+      result.geometry.computeBoundingSphere() 
+      console.log("box animation......")
+      new TWEEN.Tween(result.geometry.parameters)
+      .to(
+        {
+          height: 160
+            },
+            5000
+          )
+          .onUpdate((data)=>{
+            console.log(data)
+            result.geometry.dispose()
+            result.geometry = new THREE.BoxGeometry(data.width, data.height, data.depth)
+          })
+         .easing(TWEEN.Easing.Quadratic.Out)
+          .start()
+        }
     return result
   },
   addMaterials(params, name = 'lambert') {
@@ -469,8 +494,8 @@ const Tools = {
     toResult.geometry.colorsNeedUpdate = true
     toResult.geometry.elementsNeedUpdate = true
 
-    toResult.castShadow = true
-    toResult.receiveShadow = true
+    // toResult.castShadow = true
+    // toResult.receiveShadow = true
 
     return toResult
   },
@@ -716,7 +741,7 @@ const Tools = {
     const cabinets = this.addCabinet(params)
     results.push(cabinets)
     const {x, y, z} = cabinets.position
-    const rows = 5, zOffset = 50, width = 70, xOffset = 50, columns = 6
+    const rows = 3, zOffset = 50, width = 70, xOffset = 100, columns = 6
     for(let j=1; j<=rows; j++) {
       let nextX =  x+(j-1)*xOffset+60*(j-1)
       let startZ = j==1?2:1;

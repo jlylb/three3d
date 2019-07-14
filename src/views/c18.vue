@@ -114,6 +114,9 @@ export default {
             })
            
             break;
+        case "box":
+            scene.add(Tools.addObject(item));
+            break;
           default:
             break;
         }

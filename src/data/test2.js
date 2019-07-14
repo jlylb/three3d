@@ -256,6 +256,7 @@ export default {
               height: 200,
               thick: 1,
               visible: true,
+              enabledShadow: true,
               style: {
                 transparent: true,
                 opacity: 0.1,
@@ -265,6 +266,7 @@ export default {
             {
               name: 'glass2',
               modelType: 'glass',
+              enabledShadow: true,
               start: [400, 0, 0],
               end: [100, 0, 0],
               height: 200,
@@ -812,8 +814,111 @@ export default {
               }
             }
           }
-        }
+        },
       ]
-    }
+    },
+
+    {
+      name: 'empty_box',
+      modelType: 'box',
+      start: cabinets[0][0],
+      end: cabinets[0][1],
+      height: 200,
+      thick: 2,
+      groupPosition: [-400, 105, 100],
+      style: {
+        transparent: true,
+        color: 0x00ff00,
+        opacity: 0.2,
+      },
+      childrens: [
+        //后
+        {
+          modelType: 'hole',
+          start: cabinets[2][0],
+          end: cabinets[2][1],
+          height: 200,
+          thick: 2,
+          op: '+',
+          style: {
+            transparent: true,
+            color: 0x00ff00,
+            opacity: 0.2,
+          },
+        },
+        //右
+        {
+          modelType: 'hole',
+          start: cabinets[1][0],
+          end: cabinets[1][1],
+          height: 200,
+          thick: 2,
+          op: '+',
+          style: {
+            transparent: true,
+            color: 0x00ff00,
+            opacity: 0.2,
+          },
+        },
+        //上
+        {
+          modelType: 'hole',
+          start: cabinets[3][0],
+          end: cabinets[3][1],
+          height: 2,
+          thick: 68,
+          op: '+',
+          style: {
+            transparent: true,
+            color: 0x00ff00,
+            opacity: 0.2,
+          },
+        },
+        //下
+        {
+          modelType: 'hole',
+          start: cabinets[4][0],
+          end: cabinets[4][1],
+          height: 2,
+          thick: 68,
+          op: '+',
+          style: {
+            transparent: true,
+            color: 0x00ff00,
+            opacity: 0.2,
+          },
+        },
+        {
+          modelType: 'hole',
+          start: cabinets[5][0],
+          end: cabinets[5][1],
+          height: 196,
+          thick: 2,
+          op: '+',
+          style: {
+            transparent: true,
+            color: 0x00ff00,
+            opacity: 0.2,
+          },
+
+        },
+        {
+          modelType: 'box',
+          name: 'inner_box',
+          start: xyzServer(6)[0],
+          end: xyzServer(6)[1],
+          height: 10,
+          thick: 68,
+          style: {
+            transparent: true,
+            color: 0xff0000,
+            opacity: 0.5,
+          },
+          animation: true
+        },
+
+
+      ]
+    },
   ]
 }
