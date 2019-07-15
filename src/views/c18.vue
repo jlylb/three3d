@@ -1,5 +1,11 @@
 <template>
+<div>
+  <div class="toolsbar">
+    <button  @click="toggle(1)">toggle1</button>
+    <button  @click="toggle(2)">toggle2</button>
+  </div>
   <div id="container"></div>
+</div>
 </template>
 
 <script>
@@ -55,6 +61,10 @@ export default {
         1,
         100000
       );
+      				camera.layers.enable( 0 ); // enabled by default
+        camera.layers.disable( 1 );
+        camera.layers.enable( 2 );
+        
       camera.position.z = 300;
       camera.position.y = 1000;
       camera.position.x = -1800;
@@ -86,6 +96,8 @@ export default {
     initLight() {
       light = new THREE.AmbientLight(0xcccccc);
       light.position.set(0, 0, 0);
+      				light.layers.enable( 0 );
+				light.layers.disable( 1 );
       scene.add(light);
       var light2 = new THREE.PointLight(0x555555);
 
@@ -93,9 +105,13 @@ export default {
 
             light2.shadow.camera.near = 1;
       light2.shadow.camera.far = 5000;
-
+      				light2.layers.enable( 0 );
+				light2.layers.disable( 1 );
       light2.castShadow = true; //表示这个光是可以产生阴影的
       scene.add(light2);
+
+      camera.add( light );
+      camera.add( light2 );
     },
     createBox() {
       testdata.models.forEach(item => {
@@ -299,6 +315,9 @@ export default {
       //gp.position.copy(mesh1.position);
       //scene.add(gp);
       //scene.add(mesh2);
+    },
+    toggle(layers){
+      camera.layers.toggle(layers)
     }
   },
   mounted() {
@@ -313,4 +332,9 @@ export default {
 </script>
 
 <style>
+.toolbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 </style>

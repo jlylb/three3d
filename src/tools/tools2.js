@@ -237,6 +237,12 @@ const Tools = {
     if (params.enabledShadow) {
       result.castShadow = true
       //group.castShadow = true
+    }   
+    //开启layer
+    if (params.layer) {
+      group.layers.set(params.layer)
+      result.layers.set(params.layer)
+      //group.castShadow = true
     }
     //接收阴影
     if (params.enabledReceive) {
@@ -354,9 +360,11 @@ const Tools = {
     if (params.enabledReceive) {
       result.receiveShadow = true
     }
+    if (params.layer) {
+      result.layers.set(params.layer)
+      //group.castShadow = true
+    }
     if (params.animation) {
-      result.geometry.computeBoundingBox()
-      result.geometry.computeBoundingSphere() 
       console.log("box animation......")
       new TWEEN.Tween(result.geometry.parameters)
       .to(
@@ -739,6 +747,7 @@ const Tools = {
   createCabinet(params) {
     const results = []
     const cabinets = this.addCabinet(params)
+    console.log(cabinets, "cabinets......")
     results.push(cabinets)
     const {x, y, z} = cabinets.position
     const rows = 3, zOffset = 50, width = 70, xOffset = 100, columns = 6
@@ -759,7 +768,8 @@ const Tools = {
   },
   createServer(params) {
     return this.addServer(params)
-  }
+  },
+
 }
 
 export default Tools

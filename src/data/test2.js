@@ -627,6 +627,7 @@ export default {
       end: cabinets[0][1],
       height: 200,
       thick: 2,
+      layer: 2,
       // enabledShadow: true,
       // enabledAxes: true,
       // AxesLen: 1000,
@@ -690,6 +691,7 @@ export default {
           height: 196,
           thick: 2,
           name: 'cabinets_door',
+          layer: 2,
           style: {
             transparent: true,
             color: 0x00ff00,
@@ -723,6 +725,7 @@ export default {
           end: xyzServer(6)[1],
           height: 10,
           thick: 68,
+          layer: 2,
           style: {
             transparent: true,
             color: 0x00ff00,
@@ -756,6 +759,7 @@ export default {
           end: xyzServer(5)[1],
           height: 10,
           thick: 68,
+          layer: 2,
           style: {
             transparent: true,
             color: 0x00ff00,
@@ -789,6 +793,7 @@ export default {
           end: xyzServer(10)[1],
           height: 10,
           thick: 68,
+          layer: 2,
           style: {
             transparent: true,
             color: 0x00ff00,
@@ -820,12 +825,12 @@ export default {
 
     {
       name: 'empty_box',
-      modelType: 'box',
+      modelType: 'cabinet',
       start: cabinets[0][0],
       end: cabinets[0][1],
       height: 200,
       thick: 2,
-      groupPosition: [-400, 105, 100],
+      layer: 1,
       style: {
         transparent: true,
         color: 0x00ff00,
@@ -907,6 +912,7 @@ export default {
           name: 'inner_box',
           start: xyzServer(6)[0],
           end: xyzServer(6)[1],
+          layer: 1,
           height: 10,
           thick: 68,
           style: {
