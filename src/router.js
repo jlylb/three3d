@@ -71,6 +71,10 @@ const routes = [
   {
     path: '/c19',
     component: () => import('@/views/c19.vue')
+  },
+  {
+    path: '/c20',
+    component: () => import('@/views/c20.vue')
   }
 ]
 

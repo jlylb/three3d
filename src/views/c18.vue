@@ -1,11 +1,8 @@
 <template>
-<div>
-  <div class="toolsbar">
-    <button  @click="toggle(1)">toggle1</button>
-    <button  @click="toggle(2)">toggle2</button>
+  <div>
+    <btn-group></btn-group>
+    <div id="container"></div>
   </div>
-  <div id="container"></div>
-</div>
 </template>
 
 <script>
@@ -15,6 +12,10 @@ import { OrbitControls } from "three/examples/js/controls/OrbitControls";
 
 import testdata from "@/data/test2.js";
 import Tools from "@/tools/tools2.js";
+import btnGroup from "@/components/buttons";
+
+import PatricleEngine from "@/tools/patricle.js";
+import { Examples } from "@/tools/patricleExample.js";
 
 import {
   Path3D,
@@ -44,12 +45,25 @@ var params = {
   playSpeed: 1
 };
 
+let engine;
+
 //let points = [];
 
 const TWEEN = require("@tweenjs/tween.js");
 require("threebsp");
 
 export default {
+  components: { btnGroup },
+  data() {
+    return {
+      camera: null
+    };
+  },
+  provide() {
+    return {
+      camera: this
+    };
+  },
   methods: {
     initScene() {
       scene = new THREE.Scene({ antialias: true });
@@ -61,10 +75,11 @@ export default {
         1,
         100000
       );
-      				camera.layers.enable( 0 ); // enabled by default
-        camera.layers.disable( 1 );
-        camera.layers.enable( 2 );
-        
+      this.camera = camera;
+      camera.layers.enable(0); // enabled by default
+      camera.layers.disable(1);
+      camera.layers.enable(2);
+
       camera.position.z = 300;
       camera.position.y = 1000;
       camera.position.x = -1800;
@@ -76,6 +91,7 @@ export default {
       scene.add(camera);
       Tools.addCamera(camera);
       Tools.addScene(scene);
+      engine = new PatricleEngine(scene);
     },
     initRender() {
       var axis = new THREE.AxesHelper(1200);
@@ -96,22 +112,22 @@ export default {
     initLight() {
       light = new THREE.AmbientLight(0xcccccc);
       light.position.set(0, 0, 0);
-      				light.layers.enable( 0 );
-				light.layers.disable( 1 );
+      light.layers.enable(0);
+      light.layers.disable(1);
       scene.add(light);
       var light2 = new THREE.PointLight(0x555555);
 
       light2.position.set(0, 350, 0);
 
-            light2.shadow.camera.near = 1;
+      light2.shadow.camera.near = 1;
       light2.shadow.camera.far = 5000;
-      				light2.layers.enable( 0 );
-				light2.layers.disable( 1 );
+      light2.layers.enable(0);
+      light2.layers.disable(1);
       light2.castShadow = true; //表示这个光是可以产生阴影的
       scene.add(light2);
 
-      camera.add( light );
-      camera.add( light2 );
+      camera.add(light);
+      camera.add(light2);
     },
     createBox() {
       testdata.models.forEach(item => {
@@ -125,12 +141,12 @@ export default {
             break;
           case "cabinet":
             const cabinet = Tools.createCabinet(item);
-            cabinet.forEach((item)=>{
+            cabinet.forEach(item => {
               scene.add(item);
-            })
-           
+            });
+
             break;
-        case "box":
+          case "box":
             scene.add(Tools.addObject(item));
             break;
           default:
@@ -316,8 +332,10 @@ export default {
       //scene.add(gp);
       //scene.add(mesh2);
     },
-    toggle(layers){
-      camera.layers.toggle(layers)
+    toggle() {
+      camera.layers.toggle(1);
+      camera.layers.toggle(2);
+      // camera.layers.toggle(3);
     }
   },
   mounted() {
@@ -327,6 +345,7 @@ export default {
     this.initObjects();
     this.initRender();
     this.render();
+    console.log(this.camera, "c18....");
   }
 };
 </script>

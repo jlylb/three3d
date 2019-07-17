@@ -1,5 +1,8 @@
 <template>
-  <div id="container"></div>
+  <div class="box">
+    <btn-group></btn-group>
+    <div id="container1"></div>
+  </div>
 </template>
 
 <script>
@@ -9,6 +12,8 @@ import { OrbitControls } from "three/examples/js/controls/OrbitControls";
 
 import testdata from "@/data/test2.js";
 import Tools from "@/tools/tools2.js";
+
+import btnGroup from "@/components/buttons";
 
 // console.log(Path3D);
 
@@ -41,6 +46,7 @@ const TWEEN = require("@tweenjs/tween.js");
 require("threebsp");
 
 export default {
+  components: { btnGroup },
   methods: {
     initScene() {
       scene = new THREE.Scene({ antialias: true });
@@ -70,7 +76,7 @@ export default {
       //scene.add(axis);
       renderer = new THREE.WebGLRenderer();
       renderer.setSize(window.innerWidth, window.innerHeight);
-      document.getElementById("container").appendChild(renderer.domElement);
+      document.getElementById("container1").appendChild(renderer.domElement);
       renderer.setClearColor(0x225f93, 1.0);
       renderer.shadowMap.enabled = true;
       renderer.shadowMapSoft = true;
@@ -267,4 +273,10 @@ export default {
 </script>
 
 <style>
+.box {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
 </style>

@@ -365,7 +365,7 @@ const Tools = {
       //group.castShadow = true
     }
     if (params.animation) {
-      console.log("box animation......")
+     // console.log("box animation......")
       new TWEEN.Tween(result.geometry.parameters)
       .to(
         {
@@ -374,7 +374,7 @@ const Tools = {
             5000
           )
           .onUpdate((data)=>{
-            console.log(data)
+            //console.log(data)
             result.geometry.dispose()
             result.geometry = new THREE.BoxGeometry(data.width, data.height, data.depth)
           })
