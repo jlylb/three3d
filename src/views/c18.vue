@@ -46,6 +46,7 @@ var params = {
 };
 
 let engine;
+var clock = new THREE.Clock();
 
 //let points = [];
 
@@ -92,6 +93,8 @@ export default {
       Tools.addCamera(camera);
       Tools.addScene(scene);
       engine = new PatricleEngine(scene);
+      	engine.setValues( Examples.fountain );
+	engine.initialize();
     },
     initRender() {
       var axis = new THREE.AxesHelper(1200);
@@ -274,6 +277,8 @@ export default {
       }
       requestAnimationFrame(this.render);
       renderer.render(scene, camera);
+      	var dt = clock.getDelta();
+	engine.update( dt * 0.5 );
       // this.lineAnimate();
       // this.addLine3();
     },
