@@ -369,15 +369,15 @@ ParticleEngine.prototype.initialize = function() {
 
   this.particleGeometry.addAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
 
-  this.particleGeometry.addAttribute( 'customColor', new THREE.Float32BufferAttribute( colors, 3 ) );
+  this.particleGeometry.addAttribute( 'customColor', new THREE.Float32BufferAttribute( colors, 3 ).setDynamic(true) );
 
-  this.particleGeometry.addAttribute( 'customVisible', new THREE.Float32BufferAttribute( alives, 1 ) );
+  this.particleGeometry.addAttribute( 'customVisible', new THREE.Float32BufferAttribute( alives, 1 ).setDynamic(true) );
 
-  this.particleGeometry.addAttribute( 'customOpacity', new THREE.Float32BufferAttribute( opacities, 1 ) );
+  this.particleGeometry.addAttribute( 'customOpacity', new THREE.Float32BufferAttribute( opacities, 1 ).setDynamic(true) );
 
-  this.particleGeometry.addAttribute( 'customAngle', new THREE.Float32BufferAttribute( angles, 1 ) );
+  this.particleGeometry.addAttribute( 'customAngle', new THREE.Float32BufferAttribute( angles, 1 ).setDynamic(true) );
 
-  this.particleGeometry.addAttribute( 'customSize', new THREE.Float32BufferAttribute( size, 1 ) );
+  this.particleGeometry.addAttribute( 'customSize', new THREE.Float32BufferAttribute( size, 1 ).setDynamic(true) );
 
 
   this.particleMaterial.blending = this.blendStyle

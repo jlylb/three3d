@@ -11,6 +11,8 @@ import ParticleEngine from "../tools/patricle2.js";
 import { Examples } from "../tools/patricleExample.js";
 
 
+
+
 let scene, camera, renderer, light, controls, floor, curve, particle;
 
 var krq = new THREE.Object3D();
@@ -48,16 +50,17 @@ export default {
         45,
         window.innerWidth / window.innerHeight,
         1,
-        100000
+        5000
       );
       this.camera = camera;
 
-      camera.position.z = 150;
-      camera.position.y = 0;
-      camera.position.x = 0;
-      camera.up.x = 0;
-      camera.up.y = 1;
-      camera.up.z = 0;
+    //   camera.position.z = 150;
+    //   camera.position.y = 0;
+    //   camera.position.x = 0;
+      camera.position.set(0,200,400);
+    //   camera.up.x = 0;
+    //   camera.up.y = 1;
+    //   camera.up.z = 0;
       controls = new OrbitControls(camera);
 
       scene.add(camera);
@@ -71,7 +74,7 @@ export default {
       renderer = new THREE.WebGLRenderer();
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.getElementById("container").appendChild(renderer.domElement);
-    //  renderer.setClearColor(0x000040, 1.0);
+        renderer.setClearColor(0x000040, 1.0);
       renderer.shadowMap.enabled = true;
       renderer.shadowMapSoft = true;
 
@@ -85,10 +88,10 @@ export default {
 
       light2.position.set(0, 350, 0);
 
-      light2.shadow.camera.near = 1;
-      light2.shadow.camera.far = 5000;
+    //   light2.shadow.camera.near = 1;
+    //   light2.shadow.camera.far = 5000;
 
-      light2.castShadow = true; //表示这个光是可以产生阴影的
+     // light2.castShadow = true; //表示这个光是可以产生阴影的
       scene.add(light2);
     },
 createFloor() {
@@ -100,7 +103,12 @@ createFloor() {
 	var floor = new THREE.Mesh(floorGeometry, floorMaterial);
 	floor.position.y = -10.5;
 	floor.rotation.x = Math.PI / 2;
-	scene.add(floor);
+    scene.add(floor);
+    
+    	var skyBoxGeometry = new THREE.CubeGeometry( 4000, 4000, 4000 );
+	var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.BackSide } );
+	var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
+    scene.add(skyBox);
 },
     initObjects() {
      // this.init()
