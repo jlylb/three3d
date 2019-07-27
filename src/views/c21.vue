@@ -7,10 +7,28 @@ import * as THREE from "three";
 
 import { OrbitControls } from "three/examples/js/controls/OrbitControls";
 
+import ParticleEngine from "../tools/patricle2.js";
+import { Examples } from "../tools/patricleExample.js";
+
+
+
+
 let scene, camera, renderer, light, controls, floor, curve, particle;
 
 var krq = new THREE.Object3D();
 
+var wuPng = require("../assets/smoking.png");
+
+var floorJpg = require('../assets/patricle/checkerboard.jpg')
+
+
+var systemp
+var particles = 1000
+var particleSystem
+var geometry
+
+var engine
+var clock = new THREE.Clock();
 
 const TWEEN = require("@tweenjs/tween.js");
 require("threebsp");
@@ -32,19 +50,17 @@ export default {
         45,
         window.innerWidth / window.innerHeight,
         1,
-        100000
+        5000
       );
       this.camera = camera;
-      camera.layers.enable(0); // enabled by default
-      camera.layers.disable(1);
-      camera.layers.enable(2);
 
-      camera.position.z = 150;
-      camera.position.y = 0;
-      camera.position.x = 0;
-      camera.up.x = 0;
-      camera.up.y = 1;
-      camera.up.z = 0;
+    //   camera.position.z = 150;
+    //   camera.position.y = 0;
+    //   camera.position.x = 0;
+      camera.position.set(0,200,400);
+    //   camera.up.x = 0;
+    //   camera.up.y = 1;
+    //   camera.up.z = 0;
       controls = new OrbitControls(camera);
 
       scene.add(camera);
@@ -58,7 +74,7 @@ export default {
       renderer = new THREE.WebGLRenderer();
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.getElementById("container").appendChild(renderer.domElement);
-      renderer.setClearColor(0x000040, 1.0);
+        renderer.setClearColor(0x000040, 1.0);
       renderer.shadowMap.enabled = true;
       renderer.shadowMapSoft = true;
 
@@ -66,29 +82,128 @@ export default {
     initLight() {
       light = new THREE.AmbientLight(0xcccccc);
       light.position.set(0, 0, 0);
-      light.layers.enable(0);
-      light.layers.disable(1);
+
       scene.add(light);
-      var light2 = new THREE.PointLight(0x555555);
+      var light2 = new THREE.PointLight(0xffffff);
 
       light2.position.set(0, 350, 0);
 
-      light2.shadow.camera.near = 1;
-      light2.shadow.camera.far = 5000;
-      light2.layers.enable(0);
-      light2.layers.disable(1);
-      light2.castShadow = true; //表示这个光是可以产生阴影的
+    //   light2.shadow.camera.near = 1;
+    //   light2.shadow.camera.far = 5000;
+
+     // light2.castShadow = true; //表示这个光是可以产生阴影的
       scene.add(light2);
-
-      camera.add(light);
-      camera.add(light2);
     },
-
+createFloor() {
+    var floorTexture = new THREE.TextureLoader().load( floorJpg);
+	floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
+	floorTexture.repeat.set( 10, 10 );
+	var floorMaterial = new THREE.MeshBasicMaterial( { color: 0x444444, map: floorTexture, side: THREE.DoubleSide } );
+	var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
+	var floor = new THREE.Mesh(floorGeometry, floorMaterial);
+	floor.position.y = -10.5;
+	floor.rotation.x = Math.PI / 2;
+    scene.add(floor);
+    
+    	var skyBoxGeometry = new THREE.CubeGeometry( 4000, 4000, 4000 );
+	var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.BackSide } );
+	var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
+    scene.add(skyBox);
+},
     initObjects() {
      // this.init()
+this.createFloor()
+     //this.createSprites()
+     // this.createPatricle1()
+     // this.createParticle2()
+         engine = new ParticleEngine(scene);
+        console.log(engine, 'dddd.....')
+        engine.setValues( Examples.smoke );
+        engine.initialize();
+    },
+    createParticle2() {
+        var texture = new THREE.TextureLoader().load(wuPng)
+        const shaderMaterial = new THREE.PointsMaterial({
+            size: 4, 
+           // vertexColors: true,
+            map: texture,
+            transparent: true
+        })
+                var radius = 200;
+                
+				geometry = new THREE.BufferGeometry();
+				var positions = [];
+				var colors = [];
+				var sizes = [];
+				var color = new THREE.Color();
+				for ( var i = 0; i < particles; i ++ ) {
+					positions.push( ( Math.random() * 2 - 1 ) * radius );
+					positions.push( ( Math.random() * 2 - 1 ) * radius );
+					positions.push( ( Math.random() * 2 - 1 ) * radius );
+					color.setHSL( i / particles, 1.0, 0.5 );
+					colors.push( color.r, color.g, color.b );
+					sizes.push( 20 );
+				}
+				geometry.addAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
+				geometry.addAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+				geometry.addAttribute( 'size', new THREE.Float32BufferAttribute( sizes, 1 ).setDynamic( true ) );
+				particleSystem = new THREE.Points( geometry, shaderMaterial );
+				scene.add( particleSystem );
+    },
+    updateGeometry() {
+        if(!particleSystem) return
+        var time = Date.now() * 0.005;
+        particleSystem.rotation.z = 0.01 * time;
+        var sizes = geometry.attributes.size.array;
+        for ( var i = 0; i < particles; i ++ ) {
+            sizes[ i ] = 10 * ( 1 + Math.sin( 0.1 * i + time ) );
+        }
+        geometry.attributes.size.needsUpdate = true;
+    },
+    createPatricle1() {
+        var texture = new THREE.TextureLoader().load(wuPng)
+        const material = new THREE.PointsMaterial({
+            size: 4, 
+           // vertexColors: true,
+            map: texture,
+            transparent: true
+        })
+        var geo = new THREE.Geometry()
+        for (var x = -5; x < 5; x++) {
+                for (var y = -5; y < 5; y++) {
+                    var particle = new THREE.Vector3(x*10, y*10, 0)
+                    geo.vertices.push(particle)
+                    geo.colors.push(
+                        new THREE.Color(Math.random()*0x00ffff)
+                    )
+                }
+            }
+        systemp = new THREE.Points(geo, material)
+        //system.scale.x = system.scale.y = Math.random() * 1032 + 16;
+        //system.scale.multiplyScalar(100)
+        console.log(systemp)
+        scene.add(systemp)
+        // new TWEEN.Tween( system.position )
+        //     .delay( 1000 )
+        //    // .to( { x: Math.random() * 4000 - 2000, y: Math.random() * 1000 - 500, z: Math.random() * 4000 - 2000 }, 10000 )
+        //     .to({x:300,y:400,z:Math.random()*-100 + 50},3000)
+        //     .start();
 
-     this.createSprites()
+        new TWEEN.Tween( systemp.scale )
+            .delay( 1000 )
+            .to({x:300,y:400,z:100},3000)
+            .start();
 
+
+            var t1 = new TWEEN.Tween(systemp.position)
+                .delay(1000)
+                .to({x: 200, y:300}, 2000)
+                .onComplete((data)=>{
+                    //system.position.set(0,0,0)
+                    this.createPatricle1()
+                })
+
+                t1.start();
     },
   createSprites() {
             var material = new THREE.SpriteMaterial();
@@ -198,14 +313,20 @@ export default {
       if (TWEEN != null && typeof TWEEN != "undefined") {
         TWEEN.update();
       }
+      // this.updateGeometry()
       requestAnimationFrame(this.render);
-      renderer.render(scene, camera);
-              if(krq.position.z !== 0){
-            krq.position.z += 1;
-            krq.position.x -= 1;
-        }else{
-            krq.rotation.z = 0;
-        }
+    renderer.render(scene, camera);
+    //           if(krq.position.z !== 0){
+    //         krq.position.z += 1;
+    //         krq.position.x -= 1;
+    //     }else{
+    //         krq.rotation.z = 0;
+    //     }
+    var dt = clock.getDelta();
+    if(engine) {
+	
+	engine.update( dt * 0.5 );
+    }
 
     },
 
