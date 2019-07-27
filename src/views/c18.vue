@@ -15,7 +15,7 @@ import Tools from "@/tools/tools2.js";
 import btnGroup from "@/components/buttons";
 
 import PatricleEngine from "@/tools/patricle.js";
-import { Examples } from "@/tools/patricleExample.js";
+import Examples from "@/tools/patricleExample.js";
 
 import {
   Path3D,
@@ -93,8 +93,8 @@ export default {
       Tools.addCamera(camera);
       Tools.addScene(scene);
       engine = new PatricleEngine(scene);
-      	engine.setValues( Examples.fountain );
-	engine.initialize();
+      engine.setValues(Examples.fountain);
+      engine.initialize();
     },
     initRender() {
       var axis = new THREE.AxesHelper(1200);
@@ -136,7 +136,7 @@ export default {
       testdata.models.forEach(item => {
         switch (item.modelType) {
           case "room":
-            scene.add(Tools.createWall(item));
+            // scene.add(Tools.createWall(item));
             break;
           case "floor":
             floor = Tools.createFloor(item);
@@ -145,12 +145,12 @@ export default {
           case "cabinet":
             const cabinet = Tools.createCabinet(item);
             cabinet.forEach(item => {
-              scene.add(item);
+              //scene.add(item);
             });
 
             break;
           case "box":
-            scene.add(Tools.addObject(item));
+            // scene.add(Tools.addObject(item));
             break;
           default:
             break;
@@ -277,8 +277,8 @@ export default {
       }
       requestAnimationFrame(this.render);
       renderer.render(scene, camera);
-      	var dt = clock.getDelta();
-	engine.update( dt * 0.5 );
+      var dt = clock.getDelta();
+      engine.update(dt * 0.5);
       // this.lineAnimate();
       // this.addLine3();
     },
