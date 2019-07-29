@@ -7,9 +7,13 @@ import * as THREE from "three";
 
 import { OrbitControls } from "three/examples/js/controls/OrbitControls";
 
-import Particle from "../plugin/particle.js";
+import Fire from "../plugin/fire.js";
+
 
 let scene, camera, renderer, light, controls, floor, curve;
+
+let RenderTarget;
+let RTScene, camera2;
 
 var wuPng = require("../assets/smoking.png");
 
@@ -17,6 +21,26 @@ var floorJpg = require("../assets/patricle/checkerboard.jpg");
 
 const TWEEN = require("@tweenjs/tween.js");
 require("threebsp");
+
+			var fire;
+			var params = {
+				color1: '#ffffff',
+				color2: '#ffa000',
+				color3: '#000000',
+				colorBias: 0.8,
+				burnRate: 0.35,
+				diffuse: 1.33,
+				viscosity: 0.25,
+				expansion: - 0.25,
+				swirl: 50.0,
+				drag: 0.35,
+				airSpeed: 12.0,
+				windX: 0.0,
+				windY: 0.75,
+				speed: 500.0,
+				massConservation: false
+			};
+
 
 export default {
   components: {},
@@ -54,7 +78,9 @@ export default {
       var axis = new THREE.AxesHelper(1200);
       // 在场景中添加坐标轴
       //scene.add(axis);
-      renderer = new THREE.WebGLRenderer();
+      renderer = new THREE.WebGLRenderer({
+        antialias: true, alpha: true
+      });
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.getElementById("container").appendChild(renderer.domElement);
       renderer.setClearColor(0x000040, 1.0);
@@ -70,77 +96,116 @@ export default {
 
       light2.position.set(0, 350, 0);
 
-      //   light2.shadow.camera.near = 1;
-      //   light2.shadow.camera.far = 5000;
-
-      // light2.castShadow = true; //表示这个光是可以产生阴影的
       scene.add(light2);
     },
-    createFloor() {
-      var floorTexture = new THREE.TextureLoader().load(floorJpg);
-      floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
-      floorTexture.repeat.set(10, 10);
-      var floorMaterial = new THREE.MeshBasicMaterial({
-        color: 0x444444,
-        map: floorTexture,
-        side: THREE.DoubleSide
-      });
-      var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
-      var floor = new THREE.Mesh(floorGeometry, floorMaterial);
-      floor.position.y = -10.5;
-      floor.rotation.x = Math.PI / 2;
-      scene.add(floor);
 
-      var skyBoxGeometry = new THREE.CubeGeometry(4000, 4000, 4000);
-      var skyBoxMaterial = new THREE.MeshBasicMaterial({
-        color: 0x000000,
-        side: THREE.BackSide
-      });
-      var skyBox = new THREE.Mesh(skyBoxGeometry, skyBoxMaterial);
-      scene.add(skyBox);
-    },
     initObjects() {
-      // this.init()
-      this.createFloor();
-      var particles = 200, radius=10
-      				var geometry = new THREE.BufferGeometry();
-				var positions = [];
-				var colors = [];
-				var sizes = [];
-				var color = new THREE.Color();
-				for ( var i = 0; i < particles; i ++ ) {
-					positions.push( ( Math.random() * 2 - 1 ) * radius );
-					positions.push( ( Math.random() * 2 - 1 ) * radius );
-					positions.push( ( Math.random() * 2 - 1 ) * radius );
-					color.setHSL( i / particles, 1.0, 0.5 );
-					colors.push( color.r, color.g, color.b );
-					sizes.push( 20 );
-				}
-				geometry.addAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
-				geometry.addAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
-				geometry.addAttribute( 'size', new THREE.Float32BufferAttribute( sizes, 1 ).setDynamic( true ) );
-      let par = new Particle(geometry);
-      scene.add(par)
+ 				var plane = new THREE.PlaneBufferGeometry( 20, 20 );
+				fire = new Fire( plane, {
+					textureWidth: 512,
+					textureHeight: 512,
+					debug: false
+				} );
+				fire.position.z = - 2;
+        scene.add( fire );
+        
+        				this.Campfire();
+				this.Single();
     },
-
-    createSprites() {
-      var material = new THREE.SpriteMaterial();
-      for (var x = -5; x < 5; x++) {
-        for (var y = -5; y < 5; y++) {
-          var sprite = new THREE.Sprite(material);
-          sprite.position.set(x * 10, y * 10, 0);
-          scene.add(sprite);
-        }
-      }
-    },
-
+			Campfire() {
+					params.color1 = 0xffffff;
+					params.color2 = 0xffa000;
+					params.color3 = 0x000000;
+					params.windX = 0.0;
+					params.windY = 0.75;
+					params.colorBias = 0.8;
+					params.burnRate = 0.3;
+					params.diffuse = 1.33;
+					params.viscosity = 0.25;
+					params.expansion = - 0.25;
+					params.swirl = 50.0;
+					params.drag = 0.35;
+					params.airSpeed = 12.0;
+					params.speed = 500.0;
+					params.massConservation = false;
+					this.updateAll();
+        },
+        Single() {
+					fire.clearSources();
+					fire.addSource( 0.5, 0.1, 0.1, 1.0, 0.0, 1.0 );
+				},
+				updateColor1( value ) {
+					fire.color1.set( value );
+				},
+				updateColor2( value ) {
+					fire.color2.set( value );
+				},
+				updateColor3( value ) {
+					fire.color3.set( value );
+				},
+				updateColorBias( value ) {
+					fire.colorBias = value;
+				},
+				updateBurnRate( value ) {
+					fire.burnRate = value;
+				},
+				updateDiffuse( value ) {
+					fire.diffuse = value;
+				},
+				updateViscosity( value ) {
+					fire.viscosity = value;
+				},
+				updateExpansion( value ) {
+					fire.expansion = value;
+				},
+				updateSwirl( value ) {
+					fire.swirl = value;
+				},
+				updateDrag( value ) {
+					fire.drag = value;
+				},
+				updateAirSpeed( value ) {
+					fire.airSpeed = value;
+				},
+				updateWindX( value ) {
+					fire.windVector.x = value;
+				},
+				updateWindY( value ) {
+					fire.windVector.y = value;
+				},
+				updateSpeed( value ) {
+					fire.speed = value;
+				},
+				updateMassConservation( value ) {
+					fire.massConservation = value;
+				},
+updateAll(){
+					this.updateColor1( params.color1 );
+					this.updateColor2( params.color2 );
+					this.updateColor3( params.color3 );
+					this.updateColorBias( params.colorBias );
+					this.updateBurnRate( params.burnRate );
+					this.updateDiffuse( params.diffuse );
+					this.updateViscosity( params.viscosity );
+					this.updateExpansion( params.expansion );
+					this.updateSwirl( params.swirl );
+					this.updateDrag( params.drag );
+					this.updateAirSpeed( params.airSpeed );
+					this.updateWindX( params.windX );
+					this.updateWindY( params.windY );
+					this.updateSpeed( params.speed );
+					this.updateMassConservation( params.massConservation );
+},
     render() {
       if (TWEEN != null && typeof TWEEN != "undefined") {
         TWEEN.update();
       }
+renderer.clear();
+       renderer.render(scene, camera);
       requestAnimationFrame(this.render);
-      renderer.render(scene, camera);
-    }
+
+    },
+
   },
   mounted() {
     this.initScene();
@@ -149,6 +214,7 @@ export default {
    
     this.initRender();
      this.initObjects();
+
     this.render();
   }
 };
