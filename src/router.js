@@ -95,6 +95,50 @@ const routes = [
   {
     path: '/c25',
     component: () => import('@/views/c25.vue')
+  },
+  {
+    path: '/c40',
+    component: () => import('@/views/c40.vue')
+  },
+  {
+    path: '/c41',
+    component: () => import('@/views/c41.vue')
+  },
+  {
+    path: '/c42',
+    component: () => import('@/views/c42.vue')
+  },
+  {
+    path: '/c43',
+    component: () => import('@/views/c43.vue')
+  },
+  {
+    path: '/c44',
+    component: () => import('@/views/c44.vue')
+  },
+  {
+    path: '/c45',
+    component: () => import('@/views/c45.vue')
+  },
+  {
+    path: '/c46',
+    component: () => import('@/views/c46.vue')
+  },
+  {
+    path: '/c47',
+    component: () => import('@/views/c47.vue')
+  },
+  {
+    path: '/c48',
+    component: () => import('@/views/c48.vue')
+  },
+  {
+    path: '/c49',
+    component: () => import('@/views/c49.vue')
+  },
+  {
+    path: '/c50',
+    component: () => import('@/views/c50.vue')
   }
 ]
 

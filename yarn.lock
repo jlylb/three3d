@@ -4185,6 +4185,11 @@ lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.17.5
   version "4.17.11"
   resolved "https://registry.npm.taobao.org/lodash/download/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
 
+lodash@^4.17.15:
+  version "4.17.15"
+  resolved "https://registry.npm.taobao.org/lodash/download/lodash-4.17.15.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Flodash%2Fdownload%2Flodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
+  integrity sha1-tEf2ZwoEVbv+7dETku/zMOoJdUg=
+
 log-symbols@^2.2.0:
   version "2.2.0"
   resolved "https://registry.npm.taobao.org/log-symbols/download/log-symbols-2.2.0.tgz#5740e1c5d6f0dfda4ad9323b5332107ef6b4c40a"
@@ -5984,6 +5989,11 @@ simple-swizzle@^0.2.2:
   dependencies:
     is-arrayish "^0.3.1"
 
+simplex-noise@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.npm.taobao.org/simplex-noise/download/simplex-noise-2.4.0.tgz#81b3458fb22dccc3bc8dd9a977c73797f86f523a"
+  integrity sha1-gbNFj7ItzMO8jdmpd8c3l/hvUjo=
+
 slash@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npm.taobao.org/slash/download/slash-1.0.0.tgz#c41f2f6c39fc16d1cd17ad4b5d896114ae470d55"
@@ -6191,6 +6201,11 @@ static-extend@^0.1.1:
 stats-js@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npm.taobao.org/stats-js/download/stats-js-1.0.1.tgz#377c36490c1935b9a4e68bf3acc3afeb59878f66"
+
+stats.js@^0.17.0:
+  version "0.17.0"
+  resolved "https://registry.npm.taobao.org/stats.js/download/stats.js-0.17.0.tgz#b1c3dc46d94498b578b7fd3985b81ace7131cc7d"
+  integrity sha1-scPcRtlEmLV4t/05hbgaznExzH0=
 
 "statuses@>= 1.4.0 < 2", "statuses@>= 1.5.0 < 2", statuses@~1.5.0:
   version "1.5.0"
@@ -6442,6 +6457,14 @@ thread-loader@^2.1.2:
     loader-utils "^1.1.0"
     neo-async "^2.6.0"
 
+three-nebula@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.npm.taobao.org/three-nebula/download/three-nebula-5.0.1.tgz#7b23225020ffdc6c40dd23a73c4342307f8a3809"
+  integrity sha1-eyMiUCD/3GxA3SOnPENCMH+KOAk=
+  dependencies:
+    lodash "^4.17.15"
+    uuid "^3.3.2"
+
 three-orbit-controls@^82.1.0:
   version "82.1.0"
   resolved "https://registry.npm.taobao.org/three-orbit-controls/download/three-orbit-controls-82.1.0.tgz#11a7f33d0a20ecec98f098b37780f6537374fab4"
@@ -6453,6 +6476,11 @@ three-path-builder@^1.0.9:
 three@^0.104.0:
   version "0.104.0"
   resolved "https://registry.npm.taobao.org/three/download/three-0.104.0.tgz#9ad1da492153b753a89e0df066631215bd9d9087"
+
+three@^0.108.0:
+  version "0.108.0"
+  resolved "https://registry.npm.taobao.org/three/download/three-0.108.0.tgz#53d26597c7932f214bb43f4655e566d2058143b5"
+  integrity sha1-U9Jll8eTLyFLtD9GVeVm0gWBQ7U=
 
 threebsp@^1.0.4:
   version "1.0.4"

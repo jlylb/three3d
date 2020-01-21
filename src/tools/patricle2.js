@@ -346,16 +346,24 @@ ParticleEngine.prototype.createParticle = function() {
 
 ParticleEngine.prototype.initialize = function() {
   // link particle data with geometry/material data
-  var positions = [], size = [], colors = [], opacities = [], alives = [], angles = []
+  var positions = [],
+    size = [],
+    colors = [],
+    opacities = [],
+    alives = [],
+    angles = []
   for (var i = 0; i < this.particleCount; i++) {
     // remove duplicate code somehow, here and in update function below.
     var particle = this.createParticle()
     this.particleArray[i] = particle
 
+    positions.push(
+      particle.position.x,
+      particle.position.y,
+      particle.position.z
+    )
 
-    positions.push(particle.position.x, particle.position.y, particle.position.z)
-
-    colors.push( particle.color.r, particle.color.g, particle.color.b );
+    colors.push(particle.color.r, particle.color.g, particle.color.b)
 
     alives.push(particle.alive)
 
@@ -364,21 +372,37 @@ ParticleEngine.prototype.initialize = function() {
     angles.push(particle.angle)
 
     size.push(particle.size)
-
   }
 
-  this.particleGeometry.addAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
+  this.particleGeometry.addAttribute(
+    'position',
+    new THREE.Float32BufferAttribute(positions, 3)
+  )
 
-  this.particleGeometry.addAttribute( 'customColor', new THREE.Float32BufferAttribute( colors, 3 ).setDynamic(true) );
+  this.particleGeometry.addAttribute(
+    'customColor',
+    new THREE.Float32BufferAttribute(colors, 3).setDynamic(true)
+  )
 
-  this.particleGeometry.addAttribute( 'customVisible', new THREE.Float32BufferAttribute( alives, 1 ).setDynamic(true) );
+  this.particleGeometry.addAttribute(
+    'customVisible',
+    new THREE.Float32BufferAttribute(alives, 1).setDynamic(true)
+  )
 
-  this.particleGeometry.addAttribute( 'customOpacity', new THREE.Float32BufferAttribute( opacities, 1 ).setDynamic(true) );
+  this.particleGeometry.addAttribute(
+    'customOpacity',
+    new THREE.Float32BufferAttribute(opacities, 1).setDynamic(true)
+  )
 
-  this.particleGeometry.addAttribute( 'customAngle', new THREE.Float32BufferAttribute( angles, 1 ).setDynamic(true) );
+  this.particleGeometry.addAttribute(
+    'customAngle',
+    new THREE.Float32BufferAttribute(angles, 1).setDynamic(true)
+  )
 
-  this.particleGeometry.addAttribute( 'customSize', new THREE.Float32BufferAttribute( size, 1 ).setDynamic(true) );
-
+  this.particleGeometry.addAttribute(
+    'customSize',
+    new THREE.Float32BufferAttribute(size, 1).setDynamic(true)
+  )
 
   this.particleMaterial.blending = this.blendStyle
   if (this.blendStyle != THREE.NormalBlending)
@@ -397,8 +421,8 @@ ParticleEngine.prototype.update = function(dt) {
   var recycleIndices = []
 
   // update particle data
-  var geometry = this.particleMesh.geometry;
-  var attributes = geometry.attributes;
+  var geometry = this.particleMesh.geometry
+  var attributes = geometry.attributes
   for (var i = 0; i < this.particleCount; i++) {
     if (this.particleArray[i].alive) {
       this.particleArray[i].update(dt)
@@ -410,9 +434,9 @@ ParticleEngine.prototype.update = function(dt) {
         recycleIndices.push(i)
       }
 
-      attributes.position.array[3*i] = this.particleArray[i].position.x
-      attributes.position.array[3*i+1] = this.particleArray[i].position.y
-      attributes.position.array[3*i+2] = this.particleArray[i].position.z
+      attributes.position.array[3 * i] = this.particleArray[i].position.x
+      attributes.position.array[3 * i + 1] = this.particleArray[i].position.y
+      attributes.position.array[3 * i + 2] = this.particleArray[i].position.z
 
       attributes.customVisible.array[i] = this.particleArray[i].alive
 
@@ -421,16 +445,15 @@ ParticleEngine.prototype.update = function(dt) {
       attributes.customSize.array[i] = this.particleArray[i].size
       attributes.customAngle.array[i] = this.particleArray[i].angle
       // // update particle properties in shader
- 
     }
   }
 
-  attributes.customVisible.needsUpdate = true;
-  attributes.customColor.needsUpdate = true;
-  attributes.customOpacity.needsUpdate = true;
-  attributes.customSize.needsUpdate = true;
-  attributes.customAngle.needsUpdate = true;
-  attributes.position.needsUpdate = true;
+  attributes.customVisible.needsUpdate = true
+  attributes.customColor.needsUpdate = true
+  attributes.customOpacity.needsUpdate = true
+  attributes.customSize.needsUpdate = true
+  attributes.customAngle.needsUpdate = true
+  attributes.position.needsUpdate = true
 
   // check if particle emitter is still running
   if (!this.emitterAlive) return
@@ -452,11 +475,11 @@ ParticleEngine.prototype.update = function(dt) {
     this.particleArray[i] = this.createParticle()
     this.particleArray[i].alive = 1.0 // activate right away
     // this.particleGeometry.vertices[i] = this.particleArray[i].position
-    attributes.position.array[3*i] = this.particleArray[i].position.x
-    attributes.position.array[3*i+1] = this.particleArray[i].position.y
-    attributes.position.array[3*i+2] = this.particleArray[i].position.z
+    attributes.position.array[3 * i] = this.particleArray[i].position.x
+    attributes.position.array[3 * i + 1] = this.particleArray[i].position.y
+    attributes.position.array[3 * i + 2] = this.particleArray[i].position.z
   }
-  attributes.position.needsUpdate = true;
+  attributes.position.needsUpdate = true
   // stop emitter?
   this.emitterAge += dt
   if (this.emitterAge > this.emitterDeathAge) this.emitterAlive = false
